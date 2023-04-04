@@ -1,0 +1,28 @@
+{
+  "name": "inb-server",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node -r dotenv/config server.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^6.7.2",
+    "morgan": "^1.10.0",
+    "nodemailer": "^6.9.1",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.19.1",
+    "concurrently": "^7.6.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^7.32.0",
+    "eslint-plugin-vue": "^8.0.3"
+  },
+  "type": "module"
+}
