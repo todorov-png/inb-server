@@ -13,19 +13,21 @@ class UserService {
     if (isEmail) {
       throw ApiError.BadRequerest('User with this email is registered');
     }
+
     const isUsername = await UserModel.findOne({ username });
     if (isUsername) {
       throw ApiError.BadRequerest('User with this username is registered');
     }
-    const hashPassword = await bcrypt.hash(password, 3);
-    const activationLink = uuidv4();
 
+    const hashPassword = await bcrypt.hash(password, 3);
+    const activationLink = this.createActivationLink();
     const user = await UserModel.create({
       username,
       email,
       password: hashPassword,
       activationLink,
     });
+
     await mailService.sendActivationMail(
       email,
       `${process.env.API_URL}/api/activate/${activationLink}`
@@ -83,6 +85,16 @@ class UserService {
 
     await tokenService.saveToken(userDto.id, tokens.refreshToken);
     return { ...tokens, user: userDto };
+  }
+
+  async getCurrentUser(id) {
+    const user = await UserModel.findOne({ _id: id });
+    return user;
+  }
+
+  createActivationLink() {
+    const activationLink = uuidv4();
+    return activationLink;
   }
 
   async getAllUsers() {

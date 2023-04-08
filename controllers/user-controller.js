@@ -1,4 +1,6 @@
 /* eslint-disable */
+import mailService from '../service/mail-service.js';
+import tokenService from '../service/token-service.js';
 import userService from '../service/user-service.js';
 import ApiError from '../exceptions/api-error.js';
 
@@ -8,6 +10,9 @@ class UserController {
       const { username, email, password, repeatPassword } = req.body;
       if (!username && !email && !password && !repeatPassword) {
         throw ApiError.BadRequerest('Complete the form!');
+      }
+      if (!/^[0-9a-zA-Z]+$/.test(username)) {
+        throw ApiError.BadRequerest('Username must contain only English letters and numbers');
       }
       if (!/^[^@]+@\w+(\.\w+)+\w$/.test(email)) {
         throw ApiError.BadRequerest('Invalid email');
@@ -68,6 +73,39 @@ class UserController {
       const activationLink = req.params.link;
       await userService.activate(activationLink);
       return res.redirect(process.env.CLIENT_URL);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  async sendNewActivationCode(req, res, next) {
+    try {
+      const { refreshToken } = req.cookies;
+      if (!refreshToken) {
+        throw ApiError.UnauthorizedError();
+      }
+
+      const tokenData = await tokenService.findToken(refreshToken);
+      if (!tokenData) {
+        throw ApiError.BadRequerest("Can't find your email, contact admin");
+      }
+
+      const UserData = await userService.getCurrentUser(tokenData.user);
+      if (!UserData) {
+        throw ApiError.BadRequerest("Can't find your email, contact admin");
+      }
+
+      const activationLink = userService.createActivationLink();
+      UserData.isActivated = false;
+      UserData.activationLink = activationLink;
+
+      await mailService.sendActivationMail(
+        UserData.email,
+        `${process.env.API_URL}/api/activate/${activationLink}`
+      );
+
+      await UserData.save();
+      return res.end();
     } catch (e) {
       next(e);
     }
