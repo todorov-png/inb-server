@@ -6,6 +6,11 @@ const UserSchema = new Schema({
   password: { type: String, required: true },
   isActivated: { type: Boolean, default: false },
   activationLink: { type: String },
+  registrationDate: { type: Number },
+  activationDate: { type: Number },
+  // lastLoginDate: { type: Number },
+  roles: [{ type: Schema.Types.ObjectId, ref: 'Role' }],
+  team: { type: Schema.Types.ObjectId, ref: 'Team' },
 });
 
 export default model('User', UserSchema);

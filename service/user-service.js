@@ -26,6 +26,7 @@ class UserService {
       email,
       password: hashPassword,
       activationLink,
+      registrationDate: Date.now(),
     });
 
     await mailService.sendActivationMail(
@@ -46,6 +47,7 @@ class UserService {
       throw ApiError.BadRequerest('Incorrect activation link');
     }
     user.isActivated = true;
+    user.activationDate = Date.now();
     await user.save();
   }
 

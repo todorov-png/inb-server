@@ -95,16 +95,17 @@ class UserController {
         throw ApiError.BadRequerest("Can't find your email, contact admin");
       }
 
-      const activationLink = userService.createActivationLink();
-      UserData.isActivated = false;
-      UserData.activationLink = activationLink;
+      if (!UserData.isActivated) {
+        const activationLink = userService.createActivationLink();
+        UserData.activationLink = activationLink;
 
-      await mailService.sendActivationMail(
-        UserData.email,
-        `${process.env.API_URL}/api/activate/${activationLink}`
-      );
+        await mailService.sendActivationMail(
+          UserData.email,
+          `${process.env.API_URL}/api/activate/${activationLink}`
+        );
 
-      await UserData.save();
+        await UserData.save();
+      }
       return res.end();
     } catch (e) {
       next(e);
