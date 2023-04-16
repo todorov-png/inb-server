@@ -94,6 +94,32 @@ class UserService {
     return user;
   }
 
+  async updateUser(refreshToken, data) {
+    if (!data.password) {
+      throw ApiError.BadRequerest('Enter your password to make changes');
+    }
+
+    const userData = tokenService.validateRefreshToken(refreshToken);
+    const tokenFromDb = await tokenService.findToken(refreshToken);
+
+    if (!userData || !tokenFromDb) {
+      throw ApiError.UnauthorizedError();
+    }
+
+    const user = await UserModel.findById(userData.id);
+    const isPassEquals = await bcrypt.compare(data.password, user.password);
+    if (!isPassEquals) {
+      throw ApiError.BadRequerest('Incorrect password');
+    }
+    if (data.newPassword) user.password = await bcrypt.hash(data.newPassword, 3);
+    if (data.username) user.username = data.username;
+    if (data.email) user.email = data.email;
+
+    await user.save();
+    const userDto = new UserDto(user);
+    return userDto;
+  }
+
   createActivationLink() {
     const activationLink = uuidv4();
     return activationLink;

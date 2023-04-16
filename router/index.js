@@ -10,6 +10,7 @@ router.post('/logout', userController.logout);
 router.get('/activate/:link', userController.activate);
 router.get('/refresh', userController.refresh);
 router.post('/activation-code', userController.sendNewActivationCode);
+router.put('/update-user', userController.updateUser);
 router.get('/users', authMiddleware, userController.getUsers); //тестовый
 
 export default router;

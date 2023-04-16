@@ -126,8 +126,26 @@ class UserController {
     }
   }
 
+  async updateUser(req, res, next) {
+    try {
+      const { refreshToken } = req.cookies;
+      if (!refreshToken) {
+        throw ApiError.UnauthorizedError();
+      }
+      const user = await userService.updateUser(refreshToken, req.body);
+      return res.json(user);
+    } catch (e) {
+      next(e);
+    }
+  }
+
   async getUsers(req, res, next) {
     try {
+      const { refreshToken } = req.cookies;
+      if (!refreshToken) {
+        throw ApiError.UnauthorizedError();
+      }
+
       const users = await userService.getAllUsers();
       return res.json(users);
     } catch (e) {
