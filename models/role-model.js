@@ -3,10 +3,10 @@ import { Schema, model } from 'mongoose';
 const RoleSchema = new Schema({
   name: { type: String, required: true },
   permissions: {
-    adminMenu: { type: Boolean },
     createTeam: { type: Boolean },
+    assignTeam: { type: Boolean },
     createRole: { type: Boolean },
-    roleAssignment: { type: Boolean },
+    assignRole: { type: Boolean },
   },
 });
 
