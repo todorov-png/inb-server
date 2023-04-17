@@ -8,15 +8,15 @@ import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 
 class UserService {
-  async registration(username, email, password) {
+  async registration(username, email, password, i18n) {
     const isEmail = await UserModel.findOne({ email });
     if (isEmail) {
-      throw ApiError.BadRequerest('User with this email is registered');
+      throw ApiError.BadRequerest(i18n.t('USER_SERVICE.REGISTRATION.EMAIL'));
     }
 
     const isUsername = await UserModel.findOne({ username });
     if (isUsername) {
-      throw ApiError.BadRequerest('User with this username is registered');
+      throw ApiError.BadRequerest(i18n.t('USER_SERVICE.REGISTRATION.USERNAME'));
     }
 
     const hashPassword = await bcrypt.hash(password, 3);
@@ -31,7 +31,8 @@ class UserService {
 
     await mailService.sendActivationMail(
       email,
-      `${process.env.API_URL}/api/activate/${activationLink}`
+      `${process.env.API_URL}/api/activate/${activationLink}`,
+      i18n
     );
 
     const userDto = new UserDto(user);
@@ -41,24 +42,24 @@ class UserService {
     return { ...tokens, user: userDto };
   }
 
-  async activate(activationLink) {
+  async activate(activationLink, i18n) {
     const user = await UserModel.findOne({ activationLink });
     if (!user) {
-      throw ApiError.BadRequerest('Incorrect activation link');
+      throw ApiError.BadRequerest(i18n.t('USER_SERVICE.ACTIVATE.LINK'));
     }
     user.isActivated = true;
     user.activationDate = Date.now();
     await user.save();
   }
 
-  async login(email, password) {
+  async login(email, password, i18n) {
     const user = await UserModel.findOne({ email });
     if (!user) {
-      throw ApiError.BadRequerest('User with this email was not found');
+      throw ApiError.BadRequerest(i18n.t('USER_SERVICE.LOGIN.NOT_USER'));
     }
     const isPassEquals = await bcrypt.compare(password, user.password);
     if (!isPassEquals) {
-      throw ApiError.BadRequerest('Incorrect password');
+      throw ApiError.BadRequerest(i18n.t('USER_SERVICE.LOGIN.NOT_MATCH_PASSWORD'));
     }
     const userDto = new UserDto(user);
     const tokens = tokenService.generateTokens({ ...userDto });
@@ -94,9 +95,9 @@ class UserService {
     return user;
   }
 
-  async updateUser(refreshToken, data) {
+  async updateUser(refreshToken, data, i18n) {
     if (!data.password) {
-      throw ApiError.BadRequerest('Enter your password to make changes');
+      throw ApiError.BadRequerest(i18n.t('USER_SERVICE.UPDATE_USER.NOT_PASSWORD'));
     }
 
     const userData = tokenService.validateRefreshToken(refreshToken);
@@ -109,7 +110,7 @@ class UserService {
     const user = await UserModel.findById(userData.id);
     const isPassEquals = await bcrypt.compare(data.password, user.password);
     if (!isPassEquals) {
-      throw ApiError.BadRequerest('Incorrect password');
+      throw ApiError.BadRequerest(i18n.t('USER_SERVICE.UPDATE_USER.NOT_MATCH_PASSWORD'));
     }
     if (data.newPassword) user.password = await bcrypt.hash(data.newPassword, 3);
     if (data.username) user.username = data.username;

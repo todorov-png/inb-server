@@ -9,24 +9,24 @@ class UserController {
     try {
       const { username, email, password, repeatPassword } = req.body;
       if (!username && !email && !password && !repeatPassword) {
-        throw ApiError.BadRequerest('Complete the form!');
+        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.REGISTRATION.EMPTY'));
       }
       if (!/^[0-9a-zA-Z]+$/.test(username)) {
-        throw ApiError.BadRequerest('Username must contain only English letters and numbers');
+        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.REGISTRATION.USERNAME'));
       }
       if (!/^[^@]+@\w+(\.\w+)+\w$/.test(email)) {
-        throw ApiError.BadRequerest('Invalid email');
+        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.REGISTRATION.EMAIL'));
       }
       if (password !== repeatPassword) {
-        throw ApiError.BadRequerest('Passwords do not match!');
+        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.REGISTRATION.PASSWORD.NOT_MATCH'));
       }
       if (password.length < 4) {
-        throw ApiError.BadRequerest('Password must be longer than 4 characters!');
+        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.REGISTRATION.PASSWORD.LONG'));
       }
       if (password.length > 32) {
-        throw ApiError.BadRequerest('The password must be shorter than 32 characters!');
+        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.REGISTRATION.PASSWORD.SHORT'));
       }
-      const userData = await userService.registration(username, email, password);
+      const userData = await userService.registration(username, email, password, req.i18n);
       res.cookie('refreshToken', userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
@@ -41,12 +41,12 @@ class UserController {
     try {
       const { email, password } = req.body;
       if (!email && !password) {
-        throw ApiError.BadRequerest('Complete the form!');
+        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.LOGIN.EMPTY'));
       }
       if (!/^[^@]+@\w+(\.\w+)+\w$/.test(email)) {
-        throw ApiError.BadRequerest('Invalid email');
+        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.LOGIN.EMAIL'));
       }
-      const userData = await userService.login(email, password);
+      const userData = await userService.login(email, password, req.i18n);
       res.cookie('refreshToken', userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
@@ -71,7 +71,7 @@ class UserController {
   async activate(req, res, next) {
     try {
       const activationLink = req.params.link;
-      await userService.activate(activationLink);
+      await userService.activate(activationLink, req.i18n);
       return res.redirect(process.env.CLIENT_URL);
     } catch (e) {
       next(e);
@@ -87,12 +87,12 @@ class UserController {
 
       const tokenData = await tokenService.findToken(refreshToken);
       if (!tokenData) {
-        throw ApiError.BadRequerest("Can't find your email, contact admin");
+        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.SEND_CODE.NOT_USER'));
       }
 
       const UserData = await userService.getCurrentUser(tokenData.user);
       if (!UserData) {
-        throw ApiError.BadRequerest("Can't find your email, contact admin");
+        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.SEND_CODE.NOT_USER'));
       }
 
       if (!UserData.isActivated) {
@@ -101,7 +101,8 @@ class UserController {
 
         await mailService.sendActivationMail(
           UserData.email,
-          `${process.env.API_URL}/api/activate/${activationLink}`
+          `${process.env.API_URL}/api/activate/${activationLink}`,
+          req.i18n
         );
 
         await UserData.save();
@@ -132,7 +133,7 @@ class UserController {
       if (!refreshToken) {
         throw ApiError.UnauthorizedError();
       }
-      const user = await userService.updateUser(refreshToken, req.body);
+      const user = await userService.updateUser(refreshToken, req.body, req.i18n);
       return res.json(user);
     } catch (e) {
       next(e);

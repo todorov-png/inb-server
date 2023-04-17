@@ -13,17 +13,21 @@ class MailService {
     });
   }
 
-  async sendActivationMail(to, link) {
+  async sendActivationMail(to, link, i18n) {
     try {
       await this.transporter.sendMail({
         from: process.env.SMTP_USER,
         to,
-        subject: `Account activation on the site ${process.env.CLIENT_URL}`,
+        subject: i18n.t('MAIL_SERVICE.SUBJECT', { link: process.env.CLIENT_URL }),
         text: '',
         html: `
         <center>
-          <h3 style="text-align: center;">Hello, you have registered on the site ${process.env.CLIENT_URL}. To activate your account and start working in the system, click the button</h3>
-          <a href="${link}" style="display: inline-block; color: white; font-size: 16px; font-weight: 700; background-color: mediumblue; padding: 8px 16px; border-radius: 10px; text-decoration: none;">Activate</a>
+          <h3 style="text-align: center;">
+            ${i18n.t('MAIL_SERVICE.TEXT', { link: process.env.CLIENT_URL })}
+          </h3>
+          <a href="${link}" style="display: inline-block; color: white; font-size: 16px; font-weight: 700; background-color: mediumblue; padding: 8px 16px; border-radius: 10px; text-decoration: none;">
+            ${i18n.t('MAIL_SERVICE.BUTTON')}
+          </a>
         </center>
       `,
       });
