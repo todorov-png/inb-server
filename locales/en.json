@@ -42,5 +42,10 @@
       "NOT_PASSWORD": "Enter your password to make changes",
       "NOT_MATCH_PASSWORD": "Incorrect password"
     }
+  },
+  "ROLE_SERVICE": {
+    "CREATE": "A role with this name already exists",
+    "UPDATE": "Role not found",
+    "DELETE": "Role not found"
   }
 }

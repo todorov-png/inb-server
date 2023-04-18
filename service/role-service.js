@@ -4,8 +4,8 @@ import ApiError from '../exceptions/api-error.js';
 
 class RoleService {
   async createRole(data, i18n) {
-    const isName = await RoleModel.findOne({ name: data.name });
-    if (isName) {
+    const isRole = await RoleModel.findOne({ name: data.name });
+    if (isRole) {
       throw ApiError.BadRequerest(i18n.t('ROLE_SERVICE.CREATE'));
     }
     const role = await RoleModel.create(data);
@@ -20,6 +20,15 @@ class RoleService {
     role.name = data.name;
     role.permissions = data.permissions;
     await role.save();
+    return null;
+  }
+
+  async deleteRole(_id, i18n) {
+    const isRole = await RoleModel.findById(_id);
+    if (!isRole) {
+      throw ApiError.BadRequerest(i18n.t('ROLE_SERVICE.DELETE'));
+    }
+    await RoleModel.deleteOne({ _id });
     return null;
   }
 

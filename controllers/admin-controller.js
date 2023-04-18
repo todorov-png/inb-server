@@ -31,6 +31,36 @@ class AdminController {
     }
   }
 
+  async deleteRole(req, res, next) {
+    try {
+      const { refreshToken } = req.cookies;
+      if (!refreshToken) {
+        throw ApiError.UnauthorizedError();
+      }
+      const { role } = req.body;
+      await roleService.deleteRole(role, req.i18n);
+      return res.end();
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  async deleteRoles(req, res, next) {
+    try {
+      const { refreshToken } = req.cookies;
+      if (!refreshToken) {
+        throw ApiError.UnauthorizedError();
+      }
+      const { roles } = req.body;
+      for (const role of roles) {
+        await roleService.deleteRole(role, req.i18n);
+      }
+      return res.end();
+    } catch (e) {
+      next(e);
+    }
+  }
+
   async fetchRoles(req, res, next) {
     try {
       const { refreshToken } = req.cookies;
