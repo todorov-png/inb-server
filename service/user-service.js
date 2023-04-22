@@ -95,7 +95,7 @@ class UserService {
   async getUser(id) {
     const user = await UserModel.findOne({ _id: id });
     if (!user) {
-      throw ApiError.BadRequerest(i18n.t('USER_SERVICE.GET_USER.NOT_USER'));
+      throw ApiError.BadRequerest(i18n.t('USER_SERVICE.GET_USER.NOT_FOUND'));
     }
     return user;
   }
@@ -145,7 +145,7 @@ class UserService {
       { _id: true, username: true, email: true, role: true, team: true }
     );
     if (!user) {
-      throw ApiError.BadRequerest(i18n.t('USER_SERVICE.EDIT_USER.NOT_USER'));
+      throw ApiError.BadRequerest(i18n.t('USER_SERVICE.EDIT_USER.NOT_FOUND'));
     }
 
     const responseUser = JSON.parse(JSON.stringify(user));

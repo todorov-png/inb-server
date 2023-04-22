@@ -41,11 +41,20 @@
     "UPDATE_USER": {
       "NOT_PASSWORD": "Enter your password to make changes",
       "NOT_MATCH_PASSWORD": "Incorrect password"
+    },
+    "GET_USER": {
+      "NOT_FOUND": "User is not found"
+    },
+    "EDIT_USER": {
+      "NOT_FOUND": "User is not found"
     }
   },
   "ROLE_SERVICE": {
-    "CREATE": "A role with this name already exists",
-    "UPDATE": "Role not found",
-    "DELETE": "Role not found"
+    "HAS_ALREADY": "This name is already taken",
+    "NOT_FOUND": "Role not found"
+  },
+  "TEAM_SERVICE": {
+    "HAS_ALREADY": "This name is already taken",
+    "NOT_FOUND": "Team not found"
   }
 }

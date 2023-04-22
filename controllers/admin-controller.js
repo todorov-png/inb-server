@@ -11,8 +11,7 @@ class AdminController {
       if (!refreshToken) {
         throw ApiError.UnauthorizedError();
       }
-      const { name, permissions } = req.body;
-      const roleData = await roleService.createRole({ name, permissions }, req.i18n);
+      const roleData = await roleService.createRole(req.body, req.i18n);
       return res.json(roleData);
     } catch (e) {
       next(e);
@@ -25,8 +24,7 @@ class AdminController {
       if (!refreshToken) {
         throw ApiError.UnauthorizedError();
       }
-      const { _id, name, permissions } = req.body;
-      await roleService.updateRole({ _id, name, permissions }, req.i18n);
+      await roleService.updateRole(req.body, req.i18n);
       return res.end();
     } catch (e) {
       next(e);
@@ -39,8 +37,7 @@ class AdminController {
       if (!refreshToken) {
         throw ApiError.UnauthorizedError();
       }
-      const { role } = req.body;
-      await roleService.deleteRole(role, req.i18n);
+      await roleService.deleteRole(req.body, req.i18n);
       return res.end();
     } catch (e) {
       next(e);
@@ -95,8 +92,7 @@ class AdminController {
       if (!refreshToken) {
         throw ApiError.UnauthorizedError();
       }
-      const { name, bearer, linkTg } = req.body;
-      const teamData = await teamService.createTeam({ name, bearer, linkTg }, req.i18n);
+      const teamData = await teamService.createTeam(req.body, req.i18n);
       return res.json(teamData);
     } catch (e) {
       next(e);
@@ -109,8 +105,7 @@ class AdminController {
       if (!refreshToken) {
         throw ApiError.UnauthorizedError();
       }
-      const { _id, name, bearer, linkTg } = req.body;
-      await teamService.updateTeam({ _id, name, bearer, linkTg }, req.i18n);
+      await teamService.updateTeam(req.body, req.i18n);
       return res.end();
     } catch (e) {
       next(e);
@@ -123,8 +118,7 @@ class AdminController {
       if (!refreshToken) {
         throw ApiError.UnauthorizedError();
       }
-      const { team } = req.body;
-      await teamService.deleteTeam(team, req.i18n);
+      await teamService.deleteTeam(req.body, req.i18n);
       return res.end();
     } catch (e) {
       next(e);
@@ -176,8 +170,7 @@ class AdminController {
       if (!refreshToken) {
         throw ApiError.UnauthorizedError();
       }
-      const { userId, roleId, teamId } = req.body;
-      const user = await userService.editUser({ userId, roleId, teamId }, req.i18n);
+      const user = await userService.editUser(req.body, req.i18n);
       return res.json(user);
     } catch (e) {
       next(e);

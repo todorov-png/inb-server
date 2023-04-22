@@ -6,7 +6,7 @@ class TeamService {
   async createTeam(data, i18n) {
     const isTeam = await TeamModel.findOne({ name: data.name });
     if (isTeam) {
-      throw ApiError.BadRequerest(i18n.t('TEAM_SERVICE.CREATE'));
+      throw ApiError.BadRequerest(i18n.t('TEAM_SERVICE.HAS_ALREADY'));
     }
     const team = await TeamModel.create(data);
     return team;
@@ -15,11 +15,14 @@ class TeamService {
   async updateTeam(data, i18n) {
     const team = await TeamModel.findById(data._id);
     if (!team) {
-      throw ApiError.BadRequerest(i18n.t('TEAM_SERVICE.UPDATE'));
+      throw ApiError.BadRequerest(i18n.t('TEAM_SERVICE.NOT_FOUND'));
     }
-    //TODO добавить проверку на наличие команды с таким именем и отвечать ошибкой если оно есть
+    const isTeam = await TeamModel.findOne({ name: data.name });
+    if (isTeam && isTeam._id !== team._id) {
+      throw ApiError.BadRequerest(i18n.t('TEAM_SERVICE.HAS_ALREADY'));
+    }
     team.name = data.name;
-    team.bearer = data.bearer;
+    data.bearer ? (team.bearer = data.bearer) : null;
     team.linkTg = data.linkTg;
     await team.save();
     return null;
@@ -28,7 +31,7 @@ class TeamService {
   async deleteTeam(_id, i18n) {
     const isTeam = await TeamModel.findById(_id);
     if (!isTeam) {
-      throw ApiError.BadRequerest(i18n.t('TEAM_SERVICE.DELETE'));
+      throw ApiError.BadRequerest(i18n.t('TEAM_SERVICE.NOT_FOUND'));
     }
     await TeamModel.deleteOne({ _id });
     return null;
