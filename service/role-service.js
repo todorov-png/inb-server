@@ -36,6 +36,16 @@ class RoleService {
     const roles = await RoleModel.find();
     return roles;
   }
+
+  async getRolesList() {
+    const roles = await RoleModel.find({}, { _id: true, name: true });
+    return roles;
+  }
+
+  async getRoleName(id) {
+    const role = await RoleModel.findOne({ _id: id }, { _id: true, name: true });
+    return role;
+  }
 }
 
 export default new RoleService();

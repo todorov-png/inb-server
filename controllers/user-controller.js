@@ -90,7 +90,7 @@ class UserController {
         throw ApiError.BadRequerest(req.t('USER_CONTROLLER.SEND_CODE.NOT_USER'));
       }
 
-      const UserData = await userService.getCurrentUser(tokenData.user);
+      const UserData = await userService.getUser(tokenData.user);
       if (!UserData) {
         throw ApiError.BadRequerest(req.t('USER_CONTROLLER.SEND_CODE.NOT_USER'));
       }
@@ -135,20 +135,6 @@ class UserController {
       }
       const user = await userService.updateUser(refreshToken, req.body, req.i18n);
       return res.json(user);
-    } catch (e) {
-      next(e);
-    }
-  }
-
-  async getUsers(req, res, next) {
-    try {
-      const { refreshToken } = req.cookies;
-      if (!refreshToken) {
-        throw ApiError.UnauthorizedError();
-      }
-
-      const users = await userService.getAllUsers();
-      return res.json(users);
     } catch (e) {
       next(e);
     }

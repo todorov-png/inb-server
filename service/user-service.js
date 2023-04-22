@@ -2,6 +2,8 @@
 import UserModel from '../models/user-model.js';
 import UserDto from '../dtos/user-dto.js';
 import mailService from './mail-service.js';
+import roleService from './role-service.js';
+import teamService from './team-service.js';
 import tokenService from './token-service.js';
 import ApiError from '../exceptions/api-error.js';
 import bcrypt from 'bcrypt';
@@ -90,8 +92,11 @@ class UserService {
     return { ...tokens, user: userDto };
   }
 
-  async getCurrentUser(id) {
+  async getUser(id) {
     const user = await UserModel.findOne({ _id: id });
+    if (!user) {
+      throw ApiError.BadRequerest(i18n.t('USER_SERVICE.GET_USER.NOT_USER'));
+    }
     return user;
   }
 
@@ -127,8 +132,34 @@ class UserService {
   }
 
   async getAllUsers() {
-    const users = await UserModel.find();
+    const users = await UserModel.find(
+      {},
+      { _id: true, username: true, email: true, role: true, team: true }
+    );
     return users;
+  }
+
+  async editUser(data, i18n) {
+    const user = await UserModel.findOne(
+      { _id: data.userId },
+      { _id: true, username: true, email: true, role: true, team: true }
+    );
+    if (!user) {
+      throw ApiError.BadRequerest(i18n.t('USER_SERVICE.EDIT_USER.NOT_USER'));
+    }
+
+    const responseUser = JSON.parse(JSON.stringify(user));
+    //TODO тут переписать и убрать лишние обращения к базе
+    const role = await roleService.getRoleName(data.roleId);
+    const team = await teamService.getTeamName(data.teamId);
+
+    responseUser.role = role ? role : { name: '------', _id: null };
+    responseUser.team = team ? team : { name: '------', _id: null };
+    user.role = data.roleId;
+    user.team = data.teamId;
+    await user.save();
+
+    return responseUser;
   }
 }
 

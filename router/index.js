@@ -12,11 +12,21 @@ router.get('/activate/:link', UserController.activate);
 router.get('/refresh', UserController.refresh);
 router.post('/activation-code', authMiddleware, UserController.sendNewActivationCode);
 router.put('/update-user', authMiddleware, UserController.updateUser);
+
 router.get('/roles', authMiddleware, AdminController.fetchRoles);
+router.get('/roles-list', authMiddleware, AdminController.fetchRolesList);
 router.delete('/roles', authMiddleware, AdminController.deleteRoles);
 router.post('/role', authMiddleware, AdminController.createRole);
 router.put('/role', authMiddleware, AdminController.updateRole);
 router.delete('/role', authMiddleware, AdminController.deleteRole);
-router.get('/users', authMiddleware, UserController.getUsers); //тестовый
+
+router.get('/teams', authMiddleware, AdminController.fetchTeams);
+router.get('/teams-list', authMiddleware, AdminController.fetchTeamsList);
+router.post('/team', authMiddleware, AdminController.createTeam);
+router.put('/team', authMiddleware, AdminController.updateTeam);
+router.delete('/team', authMiddleware, AdminController.deleteTeam);
+
+router.get('/users', authMiddleware, AdminController.fetchUsers);
+router.put('/edit-user', authMiddleware, AdminController.editUser);
 
 export default router;
