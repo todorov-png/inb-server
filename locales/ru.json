@@ -47,11 +47,15 @@
     },
     "EDIT_USER": {
       "NOT_FOUND": "Пользователь не найден"
+    },
+    "DELETE_USER": {
+      "NOT_FOUND": "Пользователь не найден"
     }
   },
   "ROLE_SERVICE": {
     "HAS_ALREADY": "Это имя уже занято",
-    "NOT_FOUND": "Роль не найдена"
+    "NOT_FOUND": "Роль не найдена",
+    "NOT_PERMISSIONS": "У роли должно быть как минимум 1 разрешение"
   },
   "TEAM_SERVICE": {
     "HAS_ALREADY": "Это имя уже занято",

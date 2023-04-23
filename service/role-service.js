@@ -1,9 +1,14 @@
 /* eslint-disable */
 import RoleModel from '../models/role-model.js';
 import ApiError from '../exceptions/api-error.js';
+import userService from '../service/user-service.js';
 
 class RoleService {
   async createRole(data, i18n) {
+    if (!Object.keys(data.permissions).length) {
+      throw ApiError.BadRequerest(i18n.t('ROLE_SERVICE.NOT_PERMISSIONS'));
+    }
+    data.name = data.name.toLowerCase();
     const isRole = await RoleModel.findOne({ name: data.name });
     if (isRole) {
       throw ApiError.BadRequerest(i18n.t('ROLE_SERVICE.HAS_ALREADY'));
@@ -13,11 +18,14 @@ class RoleService {
   }
 
   async updateRole(data, i18n) {
+    if (!Object.keys(data.permissions).length) {
+      throw ApiError.BadRequerest(i18n.t('ROLE_SERVICE.NOT_PERMISSIONS'));
+    }
     const role = await RoleModel.findById(data._id);
     if (!role) {
       throw ApiError.BadRequerest(i18n.t('ROLE_SERVICE.NOT_FOUND'));
     }
-    role.name = data.name;
+    role.name = data.name.toLowerCase();
     role.permissions = data.permissions;
     await role.save();
     return null;
@@ -28,6 +36,7 @@ class RoleService {
     if (!isRole) {
       throw ApiError.BadRequerest(i18n.t('ROLE_SERVICE.NOT_FOUND'));
     }
+    await userService.clearUserRole(_id);
     await RoleModel.deleteOne({ _id });
     return null;
   }

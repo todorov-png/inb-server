@@ -28,6 +28,6 @@ router.delete('/team', authMiddleware, AdminController.deleteTeam);
 
 router.get('/users', authMiddleware, AdminController.fetchUsers);
 router.put('/user', authMiddleware, AdminController.editUser);
-// router.delete('/user', authMiddleware, AdminController.deleteUser);
+router.delete('/user', authMiddleware, AdminController.deleteUser);
 
 export default router;

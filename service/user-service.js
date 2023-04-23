@@ -135,7 +135,9 @@ class UserService {
     const users = await UserModel.find(
       {},
       { _id: true, username: true, email: true, role: true, team: true }
-    );
+    )
+      .populate('role', ['name'])
+      .populate('team', ['name']);
     return users;
   }
 
@@ -149,7 +151,6 @@ class UserService {
     }
 
     const responseUser = JSON.parse(JSON.stringify(user));
-    //TODO тут переписать и убрать лишние обращения к базе
     const role = await roleService.getRoleName(data.roleId);
     const team = await teamService.getTeamName(data.teamId);
 
@@ -160,6 +161,25 @@ class UserService {
     await user.save();
 
     return responseUser;
+  }
+
+  async deleteUser(_id, i18n) {
+    const isUser = await UserModel.findById(_id);
+    if (!isUser) {
+      throw ApiError.BadRequerest(i18n.t('USER_SERVICE.DELETE_USER.NOT_FOUND'));
+    }
+    await UserModel.deleteOne({ _id });
+    return null;
+  }
+
+  async clearUserRole(_id) {
+    await UserModel.updateMany({ role: _id }, { role: null });
+    return null;
+  }
+
+  async clearUserTeam(_id) {
+    await UserModel.updateMany({ team: _id }, { team: null });
+    return null;
   }
 }
 

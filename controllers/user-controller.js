@@ -81,10 +81,6 @@ class UserController {
   async sendNewActivationCode(req, res, next) {
     try {
       const { refreshToken } = req.cookies;
-      if (!refreshToken) {
-        throw ApiError.UnauthorizedError();
-      }
-
       const tokenData = await tokenService.findToken(refreshToken);
       if (!tokenData) {
         throw ApiError.BadRequerest(req.t('USER_CONTROLLER.SEND_CODE.NOT_USER'));
@@ -130,9 +126,6 @@ class UserController {
   async updateUser(req, res, next) {
     try {
       const { refreshToken } = req.cookies;
-      if (!refreshToken) {
-        throw ApiError.UnauthorizedError();
-      }
       const user = await userService.updateUser(refreshToken, req.body, req.i18n);
       return res.json(user);
     } catch (e) {

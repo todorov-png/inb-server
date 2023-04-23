@@ -47,11 +47,15 @@
     },
     "EDIT_USER": {
       "NOT_FOUND": "Користувач не знайдений"
+    },
+    "DELETE_USER": {
+      "NOT_FOUND": "Користувач не знайдений"
     }
   },
   "ROLE_SERVICE": {
     "HAS_ALREADY": "Ця назва вже зайнята",
-    "NOT_FOUND": "Роль не знайдена"
+    "NOT_FOUND": "Роль не знайдена",
+    "NOT_PERMISSIONS": "У ролі має бути як мінімум 1 дозвіл"
   },
   "TEAM_SERVICE": {
     "HAS_ALREADY": "Ця назва вже зайнята",

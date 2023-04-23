@@ -47,11 +47,15 @@
     },
     "EDIT_USER": {
       "NOT_FOUND": "User is not found"
+    },
+    "DELETE_USER": {
+      "NOT_FOUND": "User is not found"
     }
   },
   "ROLE_SERVICE": {
     "HAS_ALREADY": "This name is already taken",
-    "NOT_FOUND": "Role not found"
+    "NOT_FOUND": "Role not found",
+    "NOT_PERMISSIONS": "Role must have at least 1 permission"
   },
   "TEAM_SERVICE": {
     "HAS_ALREADY": "This name is already taken",

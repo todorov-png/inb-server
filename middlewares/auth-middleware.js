@@ -8,6 +8,11 @@ export default function (req, res, next) {
       return next(ApiError.UnauthorizedError());
     }
 
+    const { refreshToken } = req.cookies;
+    if (!refreshToken) {
+      return next(ApiError.UnauthorizedError());
+    }
+
     const accessToken = authorizationHeader.split(' ')[1];
     if (!accessToken) {
       return next(ApiError.UnauthorizedError());

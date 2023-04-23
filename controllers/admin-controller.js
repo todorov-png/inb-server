@@ -2,15 +2,10 @@
 import roleService from '../service/role-service.js';
 import userService from '../service/user-service.js';
 import teamService from '../service/team-service.js';
-import ApiError from '../exceptions/api-error.js';
 
 class AdminController {
   async createRole(req, res, next) {
     try {
-      const { refreshToken } = req.cookies;
-      if (!refreshToken) {
-        throw ApiError.UnauthorizedError();
-      }
       const roleData = await roleService.createRole(req.body, req.i18n);
       return res.json(roleData);
     } catch (e) {
@@ -20,10 +15,6 @@ class AdminController {
 
   async updateRole(req, res, next) {
     try {
-      const { refreshToken } = req.cookies;
-      if (!refreshToken) {
-        throw ApiError.UnauthorizedError();
-      }
       await roleService.updateRole(req.body, req.i18n);
       return res.end();
     } catch (e) {
@@ -33,11 +24,8 @@ class AdminController {
 
   async deleteRole(req, res, next) {
     try {
-      const { refreshToken } = req.cookies;
-      if (!refreshToken) {
-        throw ApiError.UnauthorizedError();
-      }
-      await roleService.deleteRole(req.body, req.i18n);
+      const { role } = req.body;
+      await roleService.deleteRole(role, req.i18n);
       return res.end();
     } catch (e) {
       next(e);
@@ -46,10 +34,6 @@ class AdminController {
 
   async deleteRoles(req, res, next) {
     try {
-      const { refreshToken } = req.cookies;
-      if (!refreshToken) {
-        throw ApiError.UnauthorizedError();
-      }
       const { roles } = req.body;
       for (const role of roles) {
         await roleService.deleteRole(role, req.i18n);
@@ -62,10 +46,6 @@ class AdminController {
 
   async fetchRoles(req, res, next) {
     try {
-      const { refreshToken } = req.cookies;
-      if (!refreshToken) {
-        throw ApiError.UnauthorizedError();
-      }
       const roles = await roleService.getAllRoles();
       return res.json(roles);
     } catch (e) {
@@ -75,10 +55,6 @@ class AdminController {
 
   async fetchRolesList(req, res, next) {
     try {
-      const { refreshToken } = req.cookies;
-      if (!refreshToken) {
-        throw ApiError.UnauthorizedError();
-      }
       const roles = await roleService.getRolesList();
       return res.json(roles);
     } catch (e) {
@@ -88,10 +64,6 @@ class AdminController {
 
   async createTeam(req, res, next) {
     try {
-      const { refreshToken } = req.cookies;
-      if (!refreshToken) {
-        throw ApiError.UnauthorizedError();
-      }
       const teamData = await teamService.createTeam(req.body, req.i18n);
       return res.json(teamData);
     } catch (e) {
@@ -101,10 +73,6 @@ class AdminController {
 
   async updateTeam(req, res, next) {
     try {
-      const { refreshToken } = req.cookies;
-      if (!refreshToken) {
-        throw ApiError.UnauthorizedError();
-      }
       await teamService.updateTeam(req.body, req.i18n);
       return res.end();
     } catch (e) {
@@ -114,11 +82,8 @@ class AdminController {
 
   async deleteTeam(req, res, next) {
     try {
-      const { refreshToken } = req.cookies;
-      if (!refreshToken) {
-        throw ApiError.UnauthorizedError();
-      }
-      await teamService.deleteTeam(req.body, req.i18n);
+      const { team } = req.body;
+      await teamService.deleteTeam(team, req.i18n);
       return res.end();
     } catch (e) {
       next(e);
@@ -127,10 +92,6 @@ class AdminController {
 
   async fetchTeams(req, res, next) {
     try {
-      const { refreshToken } = req.cookies;
-      if (!refreshToken) {
-        throw ApiError.UnauthorizedError();
-      }
       const teams = await teamService.getAllTeams();
       return res.json(teams);
     } catch (e) {
@@ -140,10 +101,6 @@ class AdminController {
 
   async fetchTeamsList(req, res, next) {
     try {
-      const { refreshToken } = req.cookies;
-      if (!refreshToken) {
-        throw ApiError.UnauthorizedError();
-      }
       const teams = await teamService.getTeamsList();
       return res.json(teams);
     } catch (e) {
@@ -153,10 +110,6 @@ class AdminController {
 
   async fetchUsers(req, res, next) {
     try {
-      const { refreshToken } = req.cookies;
-      if (!refreshToken) {
-        throw ApiError.UnauthorizedError();
-      }
       const users = await userService.getAllUsers();
       return res.json(users);
     } catch (e) {
@@ -166,12 +119,18 @@ class AdminController {
 
   async editUser(req, res, next) {
     try {
-      const { refreshToken } = req.cookies;
-      if (!refreshToken) {
-        throw ApiError.UnauthorizedError();
-      }
       const user = await userService.editUser(req.body, req.i18n);
       return res.json(user);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  async deleteUser(req, res, next) {
+    try {
+      const { user } = req.body;
+      await userService.deleteUser(user, req.i18n);
+      return res.end();
     } catch (e) {
       next(e);
     }

@@ -1,9 +1,11 @@
 /* eslint-disable */
 import TeamModel from '../models/team-model.js';
 import ApiError from '../exceptions/api-error.js';
+import userService from '../service/user-service.js';
 
 class TeamService {
   async createTeam(data, i18n) {
+    data.name = data.name.toLowerCase();
     const isTeam = await TeamModel.findOne({ name: data.name });
     if (isTeam) {
       throw ApiError.BadRequerest(i18n.t('TEAM_SERVICE.HAS_ALREADY'));
@@ -17,6 +19,7 @@ class TeamService {
     if (!team) {
       throw ApiError.BadRequerest(i18n.t('TEAM_SERVICE.NOT_FOUND'));
     }
+    data.name = data.name.toLowerCase();
     const isTeam = await TeamModel.findOne({ name: data.name });
     if (isTeam && isTeam._id !== team._id) {
       throw ApiError.BadRequerest(i18n.t('TEAM_SERVICE.HAS_ALREADY'));
@@ -33,6 +36,7 @@ class TeamService {
     if (!isTeam) {
       throw ApiError.BadRequerest(i18n.t('TEAM_SERVICE.NOT_FOUND'));
     }
+    await userService.clearUserTeam(_id);
     await TeamModel.deleteOne({ _id });
     return null;
   }
