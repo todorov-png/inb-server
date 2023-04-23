@@ -38,8 +38,8 @@ class UserService {
     );
 
     const userDto = new UserDto(user);
-    const tokens = tokenService.generateTokens({ ...userDto });
-    await tokenService.saveToken(userDto.id, tokens.refreshToken);
+    const tokens = tokenService.generateTokens({ id: user._id, username, email });
+    await tokenService.saveToken(user._id, tokens.refreshToken);
 
     return { ...tokens, user: userDto };
   }
@@ -55,7 +55,7 @@ class UserService {
   }
 
   async login(email, password, i18n) {
-    const user = await UserModel.findOne({ email });
+    const user = await UserModel.findOne({ email }).populate('role', 'permissions');
     if (!user) {
       throw ApiError.BadRequerest(i18n.t('USER_SERVICE.LOGIN.NOT_USER'));
     }
@@ -64,8 +64,8 @@ class UserService {
       throw ApiError.BadRequerest(i18n.t('USER_SERVICE.LOGIN.NOT_MATCH_PASSWORD'));
     }
     const userDto = new UserDto(user);
-    const tokens = tokenService.generateTokens({ ...userDto });
-    await tokenService.saveToken(userDto.id, tokens.refreshToken);
+    const tokens = tokenService.generateTokens({ id: user._id, username: user.username, email });
+    await tokenService.saveToken(user._id, tokens.refreshToken);
 
     return { ...tokens, user: userDto };
   }
@@ -84,11 +84,20 @@ class UserService {
     if (!userData || !tokenFromDb) {
       throw ApiError.UnauthorizedError();
     }
-    const user = await UserModel.findById(userData.id);
+    const user = await UserModel.findById(userData.id, {
+      _id: true,
+      username: true,
+      email: true,
+      isActivated: true,
+      role: true,
+    }).populate('role', 'permissions');
     const userDto = new UserDto(user);
-    const tokens = tokenService.generateTokens({ ...userDto });
-
-    await tokenService.saveToken(userDto.id, tokens.refreshToken);
+    const tokens = tokenService.generateTokens({
+      id: user._id,
+      username: user.username,
+      email: user.email,
+    });
+    await tokenService.saveToken(user._id, tokens.refreshToken);
     return { ...tokens, user: userDto };
   }
 
@@ -134,7 +143,15 @@ class UserService {
   async getAllUsers() {
     const users = await UserModel.find(
       {},
-      { _id: true, username: true, email: true, role: true, team: true }
+      {
+        _id: true,
+        username: true,
+        email: true,
+        registrationDate: true,
+        activationDate: true,
+        role: true,
+        team: true,
+      }
     )
       .populate('role', ['name'])
       .populate('team', ['name']);

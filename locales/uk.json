@@ -59,6 +59,7 @@
   },
   "TEAM_SERVICE": {
     "HAS_ALREADY": "Ця назва вже зайнята",
-    "NOT_FOUND": "Команда не знайдена"
+    "NOT_FOUND": "Команда не знайдена",
+    "BEARER_INVALID": "bearer невалідний"
   }
 }

@@ -2,6 +2,7 @@
 import TeamModel from '../models/team-model.js';
 import ApiError from '../exceptions/api-error.js';
 import userService from '../service/user-service.js';
+import crmService from '../service/crm-service.js';
 
 class TeamService {
   async createTeam(data, i18n) {
@@ -10,6 +11,11 @@ class TeamService {
     if (isTeam) {
       throw ApiError.BadRequerest(i18n.t('TEAM_SERVICE.HAS_ALREADY'));
     }
+    const answer = await crmService.getAllOffers(data.bearer);
+    if (answer === null) {
+      throw ApiError.BadRequerest(i18n.t('TEAM_SERVICE.BEARER_INVALID'));
+    }
+    //TODO добавить шифрование ключа
     const team = await TeamModel.create(data);
     return team;
   }
@@ -21,11 +27,19 @@ class TeamService {
     }
     data.name = data.name.toLowerCase();
     const isTeam = await TeamModel.findOne({ name: data.name });
-    if (isTeam && isTeam._id !== team._id) {
+    if (isTeam && isTeam._id.toString() !== team._id.toString()) {
       throw ApiError.BadRequerest(i18n.t('TEAM_SERVICE.HAS_ALREADY'));
     }
+    if (data.bearer) {
+      const answer = await crmService.getAllOffers(data.bearer);
+      if (answer === null) {
+        throw ApiError.BadRequerest(i18n.t('TEAM_SERVICE.BEARER_INVALID'));
+      } else {
+        //TODO добавить шифрование ключа
+        team.bearer = data.bearer;
+      }
+    }
     team.name = data.name;
-    data.bearer ? (team.bearer = data.bearer) : null;
     team.linkTg = data.linkTg;
     await team.save();
     return null;

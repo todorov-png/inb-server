@@ -59,6 +59,7 @@
   },
   "TEAM_SERVICE": {
     "HAS_ALREADY": "Это имя уже занято",
-    "NOT_FOUND": "Команда не найдена"
+    "NOT_FOUND": "Команда не найдена",
+    "BEARER_INVALID": "bearer невалидный"
   }
 }

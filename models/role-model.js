@@ -5,8 +5,11 @@ const RoleSchema = new Schema({
   permissions: {
     createTeam: { type: Boolean },
     assignTeam: { type: Boolean },
+    deleteTeam: { type: Boolean },
     createRole: { type: Boolean },
     assignRole: { type: Boolean },
+    deleteRole: { type: Boolean },
+    deleteUser: { type: Boolean },
   },
 });
 

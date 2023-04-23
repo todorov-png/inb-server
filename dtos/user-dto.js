@@ -1,18 +1,14 @@
 class UserDto {
   username;
   email;
-  id;
   isActivated;
-  role;
-  team;
+  permissions;
 
   constructor(model) {
     this.username = model.username;
     this.email = model.email;
-    this.id = model._id;
     this.isActivated = model.isActivated;
-    this.role = model.role || null;
-    this.team = model.team || null;
+    this.permissions = model.role ? model.role.permissions : {};
   }
 }
 

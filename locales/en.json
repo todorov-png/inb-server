@@ -59,6 +59,7 @@
   },
   "TEAM_SERVICE": {
     "HAS_ALREADY": "This name is already taken",
-    "NOT_FOUND": "Team not found"
+    "NOT_FOUND": "Team not found",
+    "BEARER_INVALID": "bearer invalid"
   }
 }
