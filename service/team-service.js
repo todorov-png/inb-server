@@ -3,6 +3,7 @@ import TeamModel from '../models/team-model.js';
 import ApiError from '../exceptions/api-error.js';
 import userService from '../service/user-service.js';
 import crmService from '../service/crm-service.js';
+import { encrypt } from '../helpers/encryption.js';
 
 class TeamService {
   async createTeam(data, i18n) {
@@ -15,7 +16,7 @@ class TeamService {
     if (answer === null) {
       throw ApiError.BadRequerest(i18n.t('TEAM_SERVICE.BEARER_INVALID'));
     }
-    //TODO добавить шифрование ключа
+    data.bearer = encrypt(data.bearer);
     const team = await TeamModel.create(data);
     return team;
   }
@@ -35,8 +36,7 @@ class TeamService {
       if (answer === null) {
         throw ApiError.BadRequerest(i18n.t('TEAM_SERVICE.BEARER_INVALID'));
       } else {
-        //TODO добавить шифрование ключа
-        team.bearer = data.bearer;
+        team.bearer = encrypt(data.bearer);
       }
     }
     team.name = data.name;

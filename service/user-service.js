@@ -90,6 +90,7 @@ class UserService {
       email: true,
       isActivated: true,
       role: true,
+      team: true,
     }).populate('role', 'permissions');
     const userDto = new UserDto(user);
     const tokens = tokenService.generateTokens({
