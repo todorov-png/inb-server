@@ -2,7 +2,9 @@
 import mailService from '../service/mail-service.js';
 import tokenService from '../service/token-service.js';
 import userService from '../service/user-service.js';
+import crmService from '../service/crm-service.js';
 import ApiError from '../exceptions/api-error.js';
+import { decrypt } from '../helpers/encryption.js';
 
 class UserController {
   async registration(req, res, next) {
@@ -128,6 +130,39 @@ class UserController {
       const { refreshToken } = req.cookies;
       const user = await userService.updateUser(refreshToken, req.body, req.i18n);
       return res.json(user);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  async getProducts(req, res, next) {
+    try {
+      const { refreshToken } = req.cookies;
+      //TODO добавить переводы и переименовать сервисы в функции в ленды
+      const tokenData = tokenService.validateRefreshToken(refreshToken);
+      if (!tokenData) {
+        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.GET_PRODUCTS.NOT_USER'));
+      }
+
+      const userData = await userService.getUserTeamBearer(tokenData.id);
+      if (!userData.team) {
+        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.GET_PRODUCTS.NOT_TEAM'));
+      }
+
+      const bearer = decrypt(userData.team.bearer);
+      const offers = await crmService.getAllOffers(bearer);
+      if (offers === null) {
+        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.GET_PRODUCTS.BEARER_INVALID'));
+      }
+      const lends = [];
+      //TODO тут получаем с базы все ленды что им подходят и формируем массив с ними
+      // offers.data.forEach(offer => {
+      //   offer.offer_title
+      // })
+
+      console.log(offers.data);
+
+      return res.json(lends);
     } catch (e) {
       next(e);
     }

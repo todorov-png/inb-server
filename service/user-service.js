@@ -110,6 +110,14 @@ class UserService {
     return user;
   }
 
+  async getUserTeamBearer(id) {
+    const user = await UserModel.findOne({ _id: id }, { team: true }).populate('team', ['bearer']);
+    if (!user) {
+      throw ApiError.BadRequerest(i18n.t('USER_SERVICE.GET_USER.NOT_FOUND'));
+    }
+    return user;
+  }
+
   async updateUser(refreshToken, data, i18n) {
     if (!data.password) {
       throw ApiError.BadRequerest(i18n.t('USER_SERVICE.UPDATE_USER.NOT_PASSWORD'));
