@@ -2,6 +2,7 @@ import { Router } from 'express';
 import UserController from '../controllers/user-controller.js';
 import AdminController from '../controllers/admin-controller.js';
 import authMiddleware from '../middlewares/auth-middleware.js';
+import permissionMiddleware from '../middlewares/permission-middleware.js';
 
 const router = new Router();
 
@@ -13,21 +14,91 @@ router.get('/refresh', UserController.refresh);
 router.post('/activation-code', authMiddleware, UserController.sendNewActivationCode);
 router.put('/user-update', authMiddleware, UserController.updateUser);
 
-router.get('/roles', authMiddleware, AdminController.fetchRoles);
-router.get('/roles-list', authMiddleware, AdminController.fetchRolesList);
-router.delete('/roles', authMiddleware, AdminController.deleteRoles);
-router.post('/role', authMiddleware, AdminController.createRole);
-router.put('/role', authMiddleware, AdminController.updateRole);
-router.delete('/role', authMiddleware, AdminController.deleteRole);
+router.get(
+  '/roles',
+  authMiddleware,
+  permissionMiddleware.bind(['createRole', 'deleteRole']),
+  AdminController.fetchRoles
+);
+router.get(
+  '/roles-list',
+  authMiddleware,
+  permissionMiddleware.bind(['assignRole']),
+  AdminController.fetchRolesList
+);
+router.delete(
+  '/roles',
+  authMiddleware,
+  permissionMiddleware.bind(['deleteRole']),
+  AdminController.deleteRoles
+);
+router.post(
+  '/role',
+  authMiddleware,
+  permissionMiddleware.bind(['createRole']),
+  AdminController.createRole
+);
+router.put(
+  '/role',
+  authMiddleware,
+  permissionMiddleware.bind(['createRole']),
+  AdminController.updateRole
+);
+router.delete(
+  '/role',
+  authMiddleware,
+  permissionMiddleware.bind(['deleteRole']),
+  AdminController.deleteRole
+);
 
-router.get('/teams', authMiddleware, AdminController.fetchTeams);
-router.get('/teams-list', authMiddleware, AdminController.fetchTeamsList);
-router.post('/team', authMiddleware, AdminController.createTeam);
-router.put('/team', authMiddleware, AdminController.updateTeam);
-router.delete('/team', authMiddleware, AdminController.deleteTeam);
+router.get(
+  '/teams',
+  authMiddleware,
+  permissionMiddleware.bind(['createTeam', 'deleteTeam']),
+  AdminController.fetchTeams
+);
+router.get(
+  '/teams-list',
+  authMiddleware,
+  permissionMiddleware.bind(['assignTeam']),
+  AdminController.fetchTeamsList
+);
+router.post(
+  '/team',
+  authMiddleware,
+  permissionMiddleware.bind(['createTeam']),
+  AdminController.createTeam
+);
+router.put(
+  '/team',
+  authMiddleware,
+  permissionMiddleware.bind(['createTeam']),
+  AdminController.updateTeam
+);
+router.delete(
+  '/team',
+  authMiddleware,
+  permissionMiddleware.bind(['deleteTeam']),
+  AdminController.deleteTeam
+);
 
-router.get('/users', authMiddleware, AdminController.fetchUsers);
-router.put('/user', authMiddleware, AdminController.editUser);
-router.delete('/user', authMiddleware, AdminController.deleteUser);
+router.get(
+  '/users',
+  authMiddleware,
+  permissionMiddleware.bind(['assignRole', 'assignTeam', 'deleteUser']),
+  AdminController.fetchUsers
+);
+router.put(
+  '/user',
+  authMiddleware,
+  permissionMiddleware.bind(['assignRole', 'assignTeam']),
+  AdminController.editUser
+);
+router.delete(
+  '/user',
+  authMiddleware,
+  permissionMiddleware.bind(['deleteUser']),
+  AdminController.deleteUser
+);
 
 export default router;
