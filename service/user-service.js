@@ -131,6 +131,9 @@ class UserService {
 
     const hashPassword = await bcrypt.hash(password, 3);
     const activationLink = this.createActivationLink();
+    if (team) {
+      await teamService.incCommandCounter(team);
+    }
     const date = Date.now();
     const user = await UserModel.create({
       username,
@@ -208,6 +211,19 @@ class UserService {
     const role = await roleService.getRoleName(data.roleId);
     const team = await teamService.getTeamName(data.teamId);
 
+    if (user.team) {
+      if (data.teamId) {
+        if (user.team.toString() !== data.teamId.toString()) {
+          await teamService.decCommandCounter(user.team);
+          await teamService.incCommandCounter(data.teamId);
+        }
+      } else {
+        await teamService.decCommandCounter(user.team);
+      }
+    } else if (data.teamId) {
+      await teamService.incCommandCounter(data.teamId);
+    }
+
     responseUser.role = role ? role : { name: '------', _id: null };
     responseUser.team = team ? team : { name: '------', _id: null };
     user.role = data.roleId;
@@ -218,10 +234,11 @@ class UserService {
   }
 
   async deleteUser(_id, i18n) {
-    const isUser = await UserModel.findById(_id);
-    if (!isUser) {
+    const user = await UserModel.findById(_id);
+    if (!user) {
       throw ApiError.BadRequerest(i18n.t('USER_SERVICE.DELETE_USER.NOT_FOUND'));
     }
+    if (user.team) await teamService.decCommandCounter(user.team);
     await UserModel.deleteOne({ _id });
     return null;
   }

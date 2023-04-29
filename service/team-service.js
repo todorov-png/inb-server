@@ -56,7 +56,7 @@ class TeamService {
   }
 
   async getAllTeams() {
-    const teams = await TeamModel.find({}, { _id: true, name: true, linkTg: true });
+    const teams = await TeamModel.find({}, { _id: true, name: true, members: true, linkTg: true });
     return teams;
   }
 
@@ -69,6 +69,15 @@ class TeamService {
     const team = await TeamModel.findOne({ _id: id }, { _id: true, name: true });
     return team;
   }
-}
 
+  async incCommandCounter(id) {
+    await TeamModel.updateOne({ _id: id }, { $inc: { members: 1 } });
+    return null;
+  }
+
+  async  decCommandCounter(id) {
+    await TeamModel.updateOne({ _id: id }, { $inc: { members: -1 } });
+    return null;
+  }
+}
 export default new TeamService();
