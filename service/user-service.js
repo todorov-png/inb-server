@@ -110,12 +110,40 @@ class UserService {
     return user;
   }
 
-  async getUserTeamBearer(id) {
-    const user = await UserModel.findOne({ _id: id }, { team: true }).populate('team', ['bearer']);
+  async getUserTeamInfo(id) {
+    const user = await UserModel.findOne({ _id: id }, { team: true }).populate('team');
     if (!user) {
       throw ApiError.BadRequerest(i18n.t('USER_SERVICE.GET_USER.NOT_FOUND'));
     }
     return user;
+  }
+
+  async createUser(username, email, password, role, team, i18n) {
+    const isEmail = await UserModel.findOne({ email });
+    if (isEmail) {
+      throw ApiError.BadRequerest(i18n.t('USER_SERVICE.CREATE_USER.EMAIL'));
+    }
+
+    const isUsername = await UserModel.findOne({ username });
+    if (isUsername) {
+      throw ApiError.BadRequerest(i18n.t('USER_SERVICE.CREATE_USER.USERNAME'));
+    }
+
+    const hashPassword = await bcrypt.hash(password, 3);
+    const activationLink = this.createActivationLink();
+    const date = Date.now();
+    const user = await UserModel.create({
+      username,
+      email,
+      role,
+      team,
+      password: hashPassword,
+      activationLink,
+      isActivated: true,
+      activationDate: date,
+      registrationDate: date,
+    });
+    return { _id: user._id, date };
   }
 
   async updateUser(refreshToken, data, i18n) {

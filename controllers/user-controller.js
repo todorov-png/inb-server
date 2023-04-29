@@ -1,6 +1,7 @@
 /* eslint-disable */
 import mailService from '../service/mail-service.js';
 import tokenService from '../service/token-service.js';
+import landService from '../service/land-service.js';
 import userService from '../service/user-service.js';
 import crmService from '../service/crm-service.js';
 import ApiError from '../exceptions/api-error.js';
@@ -135,7 +136,7 @@ class UserController {
     }
   }
 
-  async getProducts(req, res, next) {
+  async getLands(req, res, next) {
     try {
       const { refreshToken } = req.cookies;
       //TODO добавить переводы и переименовать сервисы в функции в ленды
@@ -144,7 +145,7 @@ class UserController {
         throw ApiError.BadRequerest(req.t('USER_CONTROLLER.GET_PRODUCTS.NOT_USER'));
       }
 
-      const userData = await userService.getUserTeamBearer(tokenData.id);
+      const userData = await userService.getUserTeamInfo(tokenData.id);
       if (!userData.team) {
         throw ApiError.BadRequerest(req.t('USER_CONTROLLER.GET_PRODUCTS.NOT_TEAM'));
       }
@@ -154,15 +155,22 @@ class UserController {
       if (offers === null) {
         throw ApiError.BadRequerest(req.t('USER_CONTROLLER.GET_PRODUCTS.BEARER_INVALID'));
       }
-      const lends = [];
-      //TODO тут получаем с базы все ленды что им подходят и формируем массив с ними
-      // offers.data.forEach(offer => {
-      //   offer.offer_title
-      // })
-
-      console.log(offers.data);
-
-      return res.json(lends);
+      //TODO тут нужно еще отфильтровать по разрешению на просмотр от админа
+      const productsName = offers.data.map((offer) => offer.offer_title);
+      const dataLands = await landService.getTeamsProductsLends(productsName);
+      const lands = {};
+      dataLands.forEach((land) => {
+        if (!land.privacy || land.teamName.toLocaleLowerCase === userData.team.name) {
+          const nameKey = land.product.replace(/\W/, '_');
+          Array.isArray(lands[nameKey]) ? null : (lands[nameKey] = []);
+          lands[nameKey].push({
+            country: land.country,
+            product: land.product,
+            _id: land._id,
+          });
+        }
+      });
+      return res.json(lands);
     } catch (e) {
       next(e);
     }

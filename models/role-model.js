@@ -9,6 +9,7 @@ const RoleSchema = new Schema({
     createRole: { type: Boolean },
     assignRole: { type: Boolean },
     deleteRole: { type: Boolean },
+    createUser: { type: Boolean },
     deleteUser: { type: Boolean },
   },
 });

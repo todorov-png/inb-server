@@ -13,7 +13,7 @@ router.get('/activate/:link', UserController.activate);
 router.get('/refresh', UserController.refresh);
 router.post('/activation-code', authMiddleware, UserController.sendNewActivationCode);
 router.put('/user-update', authMiddleware, UserController.updateUser);
-router.get('/products', authMiddleware, UserController.getProducts);
+router.get('/lands', authMiddleware, UserController.getLands);
 
 router.get(
   '/roles',
@@ -88,6 +88,12 @@ router.get(
   authMiddleware,
   permissionMiddleware.bind(['assignRole', 'assignTeam', 'deleteUser']),
   AdminController.fetchUsers
+);
+router.post(
+  '/user',
+  authMiddleware,
+  permissionMiddleware.bind(['createUser']),
+  AdminController.createUser
 );
 router.put(
   '/user',

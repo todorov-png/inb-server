@@ -2,6 +2,7 @@
 import roleService from '../service/role-service.js';
 import userService from '../service/user-service.js';
 import teamService from '../service/team-service.js';
+import ApiError from '../exceptions/api-error.js';
 
 class AdminController {
   async createRole(req, res, next) {
@@ -112,6 +113,31 @@ class AdminController {
     try {
       const users = await userService.getAllUsers();
       return res.json(users);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  async createUser(req, res, next) {
+    try {
+      const { username, email, password, role, team } = req.body;
+      if (!username && !email && !password) {
+        throw ApiError.BadRequerest(req.t('ADMIN_CONTROLLER.CREATE_USER.EMPTY'));
+      }
+      if (!/^[0-9a-zA-Z]+$/.test(username)) {
+        throw ApiError.BadRequerest(req.t('ADMIN_CONTROLLER.CREATE_USER.USERNAME'));
+      }
+      if (!/^[^@]+@\w+(\.\w+)+\w$/.test(email)) {
+        throw ApiError.BadRequerest(req.t('ADMIN_CONTROLLER.CREATE_USER.EMAIL'));
+      }
+      if (password.length < 4) {
+        throw ApiError.BadRequerest(req.t('ADMIN_CONTROLLER.CREATE_USER.PASSWORD.LONG'));
+      }
+      if (password.length > 32) {
+        throw ApiError.BadRequerest(req.t('ADMIN_CONTROLLER.CREATE_USER.PASSWORD.SHORT'));
+      }
+      const userId = await userService.createUser(username, email, password, role, team, req.i18n);
+      return res.json(userId);
     } catch (e) {
       next(e);
     }
