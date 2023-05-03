@@ -8,6 +8,7 @@ import cookieParser from 'cookie-parser';
 import middleware from 'i18next-http-middleware';
 import * as env from 'dotenv';
 import router from './router/index.js';
+import categoryRouter from './router/admin/category.js';
 import errorMiddleware from './middlewares/error-middleware.js';
 
 env.config();
@@ -36,6 +37,7 @@ app.use(
     origin: process.env.CLIENT_URL,
   })
 );
+app.use('/api/category', categoryRouter);
 app.use('/api', router);
 app.use(errorMiddleware);
 
