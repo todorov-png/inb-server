@@ -75,7 +75,7 @@ class TeamService {
     return null;
   }
 
-  async  decCommandCounter(id) {
+  async decCommandCounter(id) {
     await TeamModel.updateOne({ _id: id }, { $inc: { members: -1 } });
     return null;
   }

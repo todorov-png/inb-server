@@ -3,7 +3,8 @@ const { Schema } = mongoose;
 
 const landSchema = new Schema(
   {
-    nameTask: { type: String, required: true },
+    connectedProduct: { type: Schema.Types.ObjectId, ref: 'Product' },
+    nameTask: { type: String, unique: true, required: true },
     taskJira: { type: String, required: true },
     type: { type: String, required: true },
     fullName: { type: String, required: true },
