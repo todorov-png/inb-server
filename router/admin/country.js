@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import CategoryController from '../controllers/category-controller.js';
+import CountryController from '../controllers/country-controller.js';
 // import permissionMiddleware from '../middlewares/permission-middleware.js';
 import authMiddleware from '../middlewares/auth-middleware.js';
 
@@ -9,28 +9,35 @@ router.post(
   '/',
   authMiddleware,
   // permissionMiddleware.bind(['createRole']),
-  CategoryController.create
+  CountryController.create
 );
 
 router.put(
   '/',
   authMiddleware,
   // permissionMiddleware.bind(['createRole']),
-  CategoryController.update
+  CountryController.update
 );
 
 router.delete(
   '/',
   authMiddleware,
   // permissionMiddleware.bind(['deleteRole']),
-  CategoryController.delete
+  CountryController.delete
+);
+
+router.get(
+  '/',
+  authMiddleware,
+  // permissionMiddleware.bind(['createRole', 'deleteRole']),
+  CountryController.get
 );
 
 router.get(
   '/list',
   authMiddleware,
   // permissionMiddleware.bind(['createRole', 'deleteRole']),
-  CategoryController.getList
+  CountryController.getList
 );
 
 export default router;
