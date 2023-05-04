@@ -40,7 +40,7 @@ router.getAll(
   RoleController.getAll
 );
 
-router.get(
+router.getList(
   '/list',
   authMiddleware,
   permissionMiddleware.bind(['assignRole']),
