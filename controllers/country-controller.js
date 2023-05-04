@@ -1,5 +1,5 @@
 import countryService from '../service/country-service.js';
-import productService from './product-service.js';
+import productService from '../service/product-service.js';
 import ApiError from '../exceptions/api-error.js';
 
 class CountryController {

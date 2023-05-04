@@ -16,16 +16,16 @@ class LandService {
     );
     return lends;
   }
+//TODO методы выше без рефакторинга
+  async connectProduct(productID, landID) {
+    await LandModel.updateOne({ _id: landID }, { connectedProduct: productID });
+    return null;
+  }
 
-  // async getRolesList() {
-  //   const roles = await LandModel.find({}, { _id: true, name: true });
-  //   return roles;
-  // }
-
-  // async getRoleName(id) {
-  //   const role = await LandModel.findOne({ _id: id }, { _id: true, name: true });
-  //   return role;
-  // }
+  async disconnectProduct(id) {
+    await LandModel.updateOne({ _id: id }, { connectedProduct: null });
+    return null;
+  }
 }
 
 export default new LandService();
