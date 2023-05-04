@@ -208,7 +208,7 @@ class UserService {
     }
 
     const responseUser = JSON.parse(JSON.stringify(user));
-    const role = await roleService.getRoleName(data.roleId);
+    const role = await roleService.getName(data.roleId);
     const team = await teamService.getTeamName(data.teamId);
 
     if (user.team) {

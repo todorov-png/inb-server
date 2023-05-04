@@ -11,6 +11,7 @@ import router from './router/index.js';
 import categoryRouter from './router/admin/category.js';
 import countryRouter from './router/admin/country.js';
 import productRouter from './router/admin/product.js';
+import roleRouter from './router/admin/role.js';
 import errorMiddleware from './middlewares/error-middleware.js';
 
 env.config();
@@ -42,6 +43,7 @@ app.use(
 app.use('/api/category', categoryRouter);
 app.use('/api/country', countryRouter);
 app.use('/api/product', productRouter);
+app.use('/api/role', roleRouter);
 app.use('/api', router);
 app.use(errorMiddleware);
 
