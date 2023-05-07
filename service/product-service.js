@@ -7,8 +7,8 @@ class ProductService {
 
   async findByNameAndCountry(name, country) {
     return await ProductModel.findOne({
-      name: new RexExp('^' + name + '$', 'i'),
-      country: new RexExp('^' + country + '$', 'i'),
+      name: new RegExp('^' + name + '$', 'i'),
+      country: new RegExp('^' + country + '$', 'i'),
     });
   }
 
@@ -47,22 +47,18 @@ class ProductService {
 
   async clearCountry(_id) {
     await ProductModel.updateMany({ country: _id }, { country: null });
-    return null;
   }
 
   async clearCategory(_id) {
     await ProductModel.updateMany({ category: _id }, { category: null });
-    return null;
   }
 
   async pushLand(productID, landID) {
     await ProductModel.updateOne({ _id: productID }, { $push: { lands: landID } });
-    return null;
   }
 
   async popLand(productID, landID) {
     await ProductModel.updateOne({ _id: productID }, { $pop: { lands: landID } });
-    return null;
   }
 }
 export default new ProductService();

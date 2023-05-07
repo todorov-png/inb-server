@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import TeamController from '../controllers/team-controller.js';
-import permissionMiddleware from '../middlewares/permission-middleware.js';
-import authMiddleware from '../middlewares/auth-middleware.js';
+import TeamController from '../../controllers/team-controller.js';
+import permissionMiddleware from '../../middlewares/permission-middleware.js';
+import authMiddleware from '../../middlewares/auth-middleware.js';
 
 const router = new Router();
 

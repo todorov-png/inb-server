@@ -1,5 +1,4 @@
-import CountryModel from '../models/сountry-model.js';
-
+import CountryModel from '../models/country-model.js';
 class CountryService {
   async findById(id) {
     return await CountryModel.findById(id);
@@ -7,7 +6,7 @@ class CountryService {
 
   async findByName(name) {
     return await CountryModel.findOne({
-      name: new RexExp('^' + name + '$', 'i'),
+      name: new RegExp('^' + name + '$', 'i'),
     });
   }
 

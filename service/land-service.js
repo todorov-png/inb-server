@@ -19,12 +19,10 @@ class LandService {
 //TODO методы выше без рефакторинга
   async connectProduct(productID, landID) {
     await LandModel.updateOne({ _id: landID }, { connectedProduct: productID });
-    return null;
   }
 
   async disconnectProduct(id) {
     await LandModel.updateOne({ _id: id }, { connectedProduct: null });
-    return null;
   }
 }
 

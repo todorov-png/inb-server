@@ -49,7 +49,7 @@ class RoleController {
         throw ApiError.BadRequerest(req.t('CONTROLLER.ROLE.NOT_FOUND'));
       }
       await roleService.delete(_id);
-      await userService.clearUserRole(_id);
+      await userService.clearRole(_id);
       return res.end();
     } catch (e) {
       next(e);
@@ -65,7 +65,7 @@ class RoleController {
           throw ApiError.BadRequerest(req.t('CONTROLLER.ROLE.NOT_FOUND'));
         }
         await roleService.delete(roleId);
-        await userService.clearUserRole(roleId);
+        await userService.clearRole(roleId);
       }
       return res.end();
     } catch (e) {

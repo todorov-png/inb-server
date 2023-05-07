@@ -7,10 +7,11 @@ import Backend from 'i18next-fs-backend';
 import cookieParser from 'cookie-parser';
 import middleware from 'i18next-http-middleware';
 import * as env from 'dotenv';
-import router from './router/index.js';
+import clientRouter from './router/client.js';
 import categoryRouter from './router/admin/category.js';
 import countryRouter from './router/admin/country.js';
 import productRouter from './router/admin/product.js';
+import userRouter from './router/admin/user.js';
 import roleRouter from './router/admin/role.js';
 import teamRouter from './router/admin/team.js';
 import errorMiddleware from './middlewares/error-middleware.js';
@@ -44,9 +45,10 @@ app.use(
 app.use('/api/category', categoryRouter);
 app.use('/api/country', countryRouter);
 app.use('/api/product', productRouter);
+app.use('/api/user', userRouter);
 app.use('/api/role', roleRouter);
 app.use('/api/team', teamRouter);
-app.use('/api', router);
+app.use('/api', clientRouter);
 app.use(errorMiddleware);
 
 const start = async () => {

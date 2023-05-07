@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import RoleController from '../controllers/role-controller.js';
-import permissionMiddleware from '../middlewares/permission-middleware.js';
-import authMiddleware from '../middlewares/auth-middleware.js';
+import RoleController from '../../controllers/role-controller.js';
+import permissionMiddleware from '../../middlewares/permission-middleware.js';
+import authMiddleware from '../../middlewares/auth-middleware.js';
 
 const router = new Router();
 
@@ -33,14 +33,14 @@ router.delete(
   RoleController.deleteList
 );
 
-router.getAll(
+router.get(
   '/all',
   authMiddleware,
   permissionMiddleware.bind(['createRole', 'deleteRole']),
   RoleController.getAll
 );
 
-router.getList(
+router.get(
   '/list',
   authMiddleware,
   permissionMiddleware.bind(['assignRole']),

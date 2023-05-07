@@ -7,7 +7,7 @@ class CategoryService {
 
   async findByName(name) {
     return await CategoryModel.findOne({
-      name: new RexExp('^' + name + '$', 'i'),
+      name: new RegExp('^' + name + '$', 'i'),
     });
   }
 

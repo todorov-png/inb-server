@@ -2,39 +2,37 @@ import RoleModel from '../models/role-model.js';
 
 class RoleService {
   async findById(id) {
-    return await CategoryModel.findById(id);
+    return await RoleModel.findById(id);
   }
 
   async findByName(name) {
-    return await CategoryModel.findOne({
-      name: new RexExp('^' + name + '$', 'i'),
+    return await RoleModel.findOne({
+      name: new RegExp('^' + name + '$', 'i'),
     });
   }
 
   async create(data) {
-    return await CategoryModel.create(data);
+    return await RoleModel.create(data);
   }
 
   async update(id, data) {
-    await CategoryModel.updateOne({ _id: id }, data);
+    await RoleModel.updateOne({ _id: id }, data);
   }
 
   async delete(id) {
-    await CategoryModel.deleteOne({ _id: id });
+    await RoleModel.deleteOne({ _id: id });
   }
 
   async getList() {
-    return await CategoryModel.find({}, { _id: true, name: true });
+    return await RoleModel.find({}, { _id: true, name: true });
   }
 
   async getAll() {
-    const roles = await RoleModel.find();
-    return roles;
+    return await RoleModel.find();
   }
 
   async getName(id) {
-    const role = await RoleModel.findOne({ _id: id }, { _id: true, name: true });
-    return role;
+    return await RoleModel.findOne({ _id: id }, { _id: true, name: true });
   }
 }
 

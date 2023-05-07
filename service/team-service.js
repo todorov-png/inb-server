@@ -7,7 +7,7 @@ class TeamService {
 
   async findByName(name) {
     return await TeamModel.findOne({
-      name: new RexExp('^' + name + '$', 'i'),
+      name: new RegExp('^' + name + '$', 'i'),
     });
   }
 
@@ -24,28 +24,23 @@ class TeamService {
   }
 
   async getAll() {
-    const teams = await TeamModel.find({}, { _id: true, name: true, members: true, linkTg: true });
-    return teams;
+    return await TeamModel.find({}, { _id: true, name: true, members: true, linkTg: true });
   }
 
   async getList() {
-    const teams = await TeamModel.find({}, { _id: true, name: true });
-    return teams;
+    return await TeamModel.find({}, { _id: true, name: true });
   }
 
   async getName(id) {
-    const team = await TeamModel.findOne({ _id: id }, { _id: true, name: true });
-    return team;
+    return await TeamModel.findOne({ _id: id }, { _id: true, name: true });
   }
 
   async incUserCounter(id) {
     await TeamModel.updateOne({ _id: id }, { $inc: { members: 1 } });
-    return null;
   }
 
   async decUserCounter(id) {
     await TeamModel.updateOne({ _id: id }, { $inc: { members: -1 } });
-    return null;
   }
 }
 export default new TeamService();

@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import CountryController from '../controllers/country-controller.js';
-// import permissionMiddleware from '../middlewares/permission-middleware.js';
-import authMiddleware from '../middlewares/auth-middleware.js';
+import CountryController from '../../controllers/country-controller.js';
+// import permissionMiddleware from '../../middlewares/permission-middleware.js';
+import authMiddleware from '../../middlewares/auth-middleware.js';
 
 const router = new Router();
 

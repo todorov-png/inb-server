@@ -1,182 +1,119 @@
-/* eslint-disable */
-import mailService from '../service/mail-service.js';
-import tokenService from '../service/token-service.js';
-import landService from '../service/land-service.js';
 import userService from '../service/user-service.js';
-import crmService from '../service/crm-service.js';
+import teamService from '../service/team-service.js';
+import roleService from '../service/role-service.js';
 import ApiError from '../exceptions/api-error.js';
-import { decrypt } from '../helpers/encryption.js';
+import bcrypt from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
 
 class UserController {
-  async registration(req, res, next) {
+  async getAll(req, res, next) {
     try {
-      const { username, email, password, repeatPassword } = req.body;
-      if (!username && !email && !password && !repeatPassword) {
-        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.REGISTRATION.EMPTY'));
+      const users = await userService.getAll();
+      return res.json(users);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  async create(req, res, next) {
+    try {
+      const { username, email, password, role, team } = req.body;
+      if (!username && !email && !password) {
+        throw ApiError.BadRequerest(req.t('CONTROLLER.TEAM.CREATE_USER.EMPTY'));
       }
       if (!/^[0-9a-zA-Z]+$/.test(username)) {
-        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.REGISTRATION.USERNAME'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.TEAM.CREATE_USER.USERNAME'));
       }
       if (!/^[^@]+@\w+(\.\w+)+\w$/.test(email)) {
-        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.REGISTRATION.EMAIL'));
-      }
-      if (password !== repeatPassword) {
-        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.REGISTRATION.PASSWORD.NOT_MATCH'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.TEAM.CREATE_USER.EMAIL'));
       }
       if (password.length < 4) {
-        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.REGISTRATION.PASSWORD.LONG'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.TEAM.CREATE_USER.PASSWORD.LONG'));
       }
       if (password.length > 32) {
-        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.REGISTRATION.PASSWORD.SHORT'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.TEAM.CREATE_USER.PASSWORD.SHORT'));
       }
-      const userData = await userService.registration(username, email, password, req.i18n);
-      res.cookie('refreshToken', userData.refreshToken, {
-        maxAge: 30 * 24 * 60 * 60 * 1000,
-        httpOnly: true,
-        sameSite: 'none',
-        secure: true,
-      });
-      return res.json(userData);
+      const isEmail = await userService.findByEmail(email);
+      if (isEmail) {
+        throw ApiError.BadRequerest(req.t('USER_SERVICE.CREATE_USER.EMAIL'));
+      }
+      const isUsername = await userService.findByUsername(username);
+      if (isUsername) {
+        throw ApiError.BadRequerest(req.t('USER_SERVICE.CREATE_USER.USERNAME'));
+      }
+      const hashPassword = await bcrypt.hash(password, 3);
+      const activationLink = uuidv4();
+      if (team) {
+        await teamService.incUserCounter(team);
+      }
+      const date = Date.now();
+      const userId = await userService.create(
+        {
+          username,
+          email,
+          role,
+          team,
+          password: hashPassword,
+          activationLink,
+          isActivated: true,
+          activationDate: date,
+          registrationDate: date,
+        },
+        date
+      );
+      return res.json(userId);
     } catch (e) {
       next(e);
     }
   }
 
-  async login(req, res, next) {
+  async update(req, res, next) {
     try {
-      const { email, password } = req.body;
-      if (!email && !password) {
-        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.LOGIN.EMPTY'));
-      }
-      if (!/^[^@]+@\w+(\.\w+)+\w$/.test(email)) {
-        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.LOGIN.EMAIL'));
-      }
-      const userData = await userService.login(email, password, req.i18n);
-      res.cookie('refreshToken', userData.refreshToken, {
-        maxAge: 30 * 24 * 60 * 60 * 1000,
-        httpOnly: true,
-        sameSite: 'none',
-        secure: true,
-      });
-      return res.json(userData);
-    } catch (e) {
-      next(e);
-    }
-  }
-
-  async logout(req, res, next) {
-    try {
-      const { refreshToken } = req.cookies;
-      const token = await userService.logout(refreshToken);
-      res.clearCookie('refreshToken');
-      return res.json(token);
-    } catch (e) {
-      next(e);
-    }
-  }
-
-  async activate(req, res, next) {
-    try {
-      const activationLink = req.params.link;
-      await userService.activate(activationLink, req.i18n);
-      return res.redirect(process.env.CLIENT_URL);
-    } catch (e) {
-      next(e);
-    }
-  }
-
-  async sendNewActivationCode(req, res, next) {
-    try {
-      const { refreshToken } = req.cookies;
-      const tokenData = await tokenService.findToken(refreshToken);
-      if (!tokenData) {
-        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.SEND_CODE.NOT_USER'));
+      const { userId, roleId, teamId } = req.body;
+      const user = await userService.findById(userId);
+      if (!user) {
+        throw ApiError.BadRequerest(req.t('USER_SERVICE.EDIT_USER.NOT_FOUND'));
       }
 
-      const UserData = await userService.getUser(tokenData.user);
-      if (!UserData) {
-        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.SEND_CODE.NOT_USER'));
-      }
+      const responseUser = JSON.parse(JSON.stringify(user));
+      const role = await roleService.getName(roleId);
+      const team = await teamService.getName(teamId);
 
-      if (!UserData.isActivated) {
-        const activationLink = userService.createActivationLink();
-        UserData.activationLink = activationLink;
-
-        await mailService.sendActivationMail(
-          UserData.email,
-          `${process.env.API_URL}/api/activate/${activationLink}`,
-          req.i18n
-        );
-
-        await UserData.save();
-      }
-      return res.end();
-    } catch (e) {
-      next(e);
-    }
-  }
-
-  async refresh(req, res, next) {
-    try {
-      const { refreshToken } = req.cookies;
-      const userData = await userService.refresh(refreshToken);
-      res.cookie('refreshToken', userData.refreshToken, {
-        maxAge: 30 * 24 * 60 * 60 * 1000,
-        httpOnly: true,
-        sameSite: 'none',
-        secure: true,
-      });
-      return res.json(userData);
-    } catch (e) {
-      next(e);
-    }
-  }
-
-  async updateUser(req, res, next) {
-    try {
-      const { refreshToken } = req.cookies;
-      const user = await userService.updateUser(refreshToken, req.body, req.i18n);
-      return res.json(user);
-    } catch (e) {
-      next(e);
-    }
-  }
-
-  async getLands(req, res, next) {
-    try {
-      const { refreshToken } = req.cookies;
-      //TODO добавить переводы и переименовать сервисы в функции в ленды
-      const tokenData = tokenService.validateRefreshToken(refreshToken);
-      if (!tokenData) {
-        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.GET_PRODUCTS.NOT_USER'));
-      }
-
-      const userData = await userService.getUserTeamInfo(tokenData.id);
-      if (!userData.team) {
-        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.GET_PRODUCTS.NOT_TEAM'));
-      }
-
-      const bearer = decrypt(userData.team.bearer);
-      const offers = await crmService.getAllOffers(bearer);
-      if (offers === null) {
-        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.GET_PRODUCTS.BEARER_INVALID'));
-      }
-      //TODO тут нужно еще отфильтровать по разрешению на просмотр от админа
-      const productsName = offers.data.map((offer) => offer.offer_title);
-      const dataLands = await landService.getTeamsProductsLends(productsName);
-      const lands = {};
-      dataLands.forEach((land) => {
-        if (!land.privacy || land.teamName.toLocaleLowerCase === userData.team.name) {
-          const nameKey = land.product.replace(/\W/, '_');
-          Array.isArray(lands[nameKey]) ? null : (lands[nameKey] = []);
-          lands[nameKey].push({
-            country: land.country,
-            product: land.product,
-            _id: land._id,
-          });
+      if (user.team) {
+        if (teamId) {
+          if (user.team.toString() !== teamId.toString()) {
+            await teamService.decUserCounter(user.team);
+            await teamService.incUserCounter(teamId);
+          }
+        } else {
+          await teamService.decUserCounter(user.team);
         }
-      });
-      return res.json(lands);
+      } else if (teamId) {
+        await teamService.incUserCounter(teamId);
+      }
+
+      responseUser.role = role ? role : { name: '------', _id: null };
+      responseUser.team = team ? team : { name: '------', _id: null };
+      user.role = data.roleId;
+      user.team = data.teamId;
+      await userService.update(user._id, user);
+
+      return res.json(responseUser);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  async delete(req, res, next) {
+    try {
+      const { user } = req.body;
+      const userData = await userService.findById(user);
+      if (!userData) {
+        throw ApiError.BadRequerest(req.t('USER_SERVICE.DELETE_USER.NOT_FOUND'));
+      }
+      if (userData.team) await teamService.decUserCounter(userData.team);
+      await userService.delete(user);
+      return res.end();
     } catch (e) {
       next(e);
     }

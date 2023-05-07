@@ -61,7 +61,7 @@ class TeamController {
         throw ApiError.BadRequerest(req.t('CONTROLLER.TEAM.NOT_FOUND'));
       }
       await teamService.delete(_id);
-      await userService.clearUserTeam(_id);
+      await userService.clearTeam(_id);
       return res.end();
     } catch (e) {
       next(e);
