@@ -28,9 +28,6 @@ class RoleController {
         throw ApiError.BadRequerest(req.t('CONTROLLER.ROLE.NOT_FOUND'));
       }
       const isRole = await roleService.findByName(name);
-      if (isRole) {
-        throw ApiError.BadRequerest(req.t('CONTROLLER.ROLE.HAS_ALREADY'));
-      }
       if (isRole && isRole._id.toString() !== role._id.toString()) {
         throw ApiError.BadRequerest(req.t('CONTROLLER.ROLE.HAS_ALREADY'));
       }
@@ -43,13 +40,13 @@ class RoleController {
 
   async delete(req, res, next) {
     try {
-      const { _id } = req.body;
-      const isRole = await roleService.findById(_id);
-      if (isRole) {
+      const { role } = req.body;
+      const isRole = await roleService.findById(role);
+      if (!isRole) {
         throw ApiError.BadRequerest(req.t('CONTROLLER.ROLE.NOT_FOUND'));
       }
-      await roleService.delete(_id);
-      await userService.clearRole(_id);
+      await roleService.delete(role);
+      await userService.clearRole(role);
       return res.end();
     } catch (e) {
       next(e);
@@ -59,13 +56,13 @@ class RoleController {
   async deleteList(req, res, next) {
     try {
       const { roles } = req.body;
-      for (const roleId of roles) {
-        const isRole = await roleService.findById(roleId);
-        if (isRole) {
+      for (const role of roles) {
+        const isRole = await roleService.findById(role);
+        if (!isRole) {
           throw ApiError.BadRequerest(req.t('CONTROLLER.ROLE.NOT_FOUND'));
         }
-        await roleService.delete(roleId);
-        await userService.clearRole(roleId);
+        await roleService.delete(role);
+        await userService.clearRole(role);
       }
       return res.end();
     } catch (e) {

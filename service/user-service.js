@@ -18,7 +18,7 @@ class UserService {
   }
 
   async getAll() {
-    const users = await UserModel.find(
+    return await UserModel.find(
       {},
       {
         _id: true,
@@ -32,7 +32,6 @@ class UserService {
     )
       .populate('role', ['name'])
       .populate('team', ['name']);
-    return users;
   }
 
   async create(data, date) {

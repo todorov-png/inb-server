@@ -6,25 +6,25 @@ import permissionMiddleware from '../../middlewares/permission-middleware.js';
 const router = new Router();
 
 router.get(
-  '/user/all',
+  '/all',
   authMiddleware,
   permissionMiddleware.bind(['assignRole', 'assignTeam', 'deleteUser']),
   UserController.getAll
 );
 router.post(
-  '/user',
+  '/',
   authMiddleware,
   permissionMiddleware.bind(['createUser']),
   UserController.create
 );
 router.put(
-  '/user',
+  '/',
   authMiddleware,
   permissionMiddleware.bind(['assignRole', 'assignTeam']),
   UserController.update
 );
 router.delete(
-  '/user',
+  '/',
   authMiddleware,
   permissionMiddleware.bind(['deleteUser']),
   UserController.delete

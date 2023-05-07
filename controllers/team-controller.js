@@ -32,9 +32,6 @@ class TeamController {
         throw ApiError.BadRequerest(req.t('CONTROLLER.TEAM.NOT_FOUND'));
       }
       const isTeam = await teamService.findByName(name);
-      if (isTeam) {
-        throw ApiError.BadRequerest(req.t('CONTROLLER.TEAM.HAS_ALREADY'));
-      }
       if (isTeam && isTeam._id.toString() !== team._id.toString()) {
         throw ApiError.BadRequerest(req.t('CONTROLLER.TEAM.HAS_ALREADY'));
       }

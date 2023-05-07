@@ -197,25 +197,57 @@ class ClientController {
     try {
       const { refreshToken } = req.cookies;
       const { password, newPassword, username, email } = req.body;
-      if (!password) {
-        throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.UPDATE.NOT_PASSWORD'));
-      }
-
       const userData = tokenService.validateRefresh(refreshToken);
+      if (!password) {
+        throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.UPDATE.PASSWORD.EMPTY'));
+      }
+      if (email) {
+        if (!/^[^@]+@\w+(\.\w+)+\w$/.test(email)) {
+          throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.LOGIN.EMAIL'));
+        }
+        if (email !== userData.email) {
+          const isEmail = await clientService.findByEmail(email);
+          if (isEmail) {
+            throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.UPDATE.EMAIL.AVAILABLE'));
+          }
+        }
+      }
+      if (username) {
+        if (!/^[0-9a-zA-Z]+$/.test(username)) {
+          throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.REGISTRATION.USERNAME.ERROR'));
+        }
+        if (username !== userData.username) {
+          const isUsername = await clientService.findByUsername(username);
+          if (isUsername) {
+            throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.UPDATE.USERNAME.AVAILABLE'));
+          }
+        }
+      }
+      if (newPassword) {
+        if (newPassword.length < 4) {
+          throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.UPDATE.PASSWORD.LONG'));
+        }
+        if (newPassword.length > 32) {
+          throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.UPDATE.PASSWORD.SHORT'));
+        }
+      }
       const tokenFromDb = await tokenService.get(refreshToken);
-
       if (!userData || !tokenFromDb) {
         throw ApiError.UnauthorizedError();
       }
       const user = await clientService.findById(userData.id);
       const isPassEquals = await bcrypt.compare(password, user.password);
       if (!isPassEquals) {
-        throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.UPDATE.NOT_MATCH_PASSWORD'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.UPDATE.PASSWORD.NOT_MATCH'));
       }
       if (newPassword) user.password = await bcrypt.hash(newPassword, 3);
       if (username) user.username = username;
       if (email) user.email = email;
-      await clientService.update(user._id, user);
+      await clientService.update(user._id, {
+        username: user.username,
+        email: user.email,
+        password: user.password,
+      });
       const userDto = new UserDto(user);
       return res.json(userDto);
     } catch (e) {

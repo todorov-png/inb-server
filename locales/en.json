@@ -41,8 +41,20 @@
         "NOT_FOUND": "User is not found"
       },
       "UPDATE": {
-        "NOT_PASSWORD": "Enter your password to make changes",
-        "NOT_MATCH_PASSWORD": "Incorrect password"
+        "USERNAME": {
+          "ERROR": "Username must contain only English letters and numbers",
+          "AVAILABLE": "User with this username is registered"
+        },
+        "EMAIL": {
+          "ERROR": "Invalid email",
+          "AVAILABLE": "User with this email is registered"
+        },
+        "PASSWORD": {
+          "EMPTY": "Enter your password to make changes",
+          "NOT_MATCH": "Incorrect password",
+          "LONG": "Password must be longer than 4 characters!",
+          "SHORT": "The password must be shorter than 32 characters!"
+        }
       }
     },
     "USER": {

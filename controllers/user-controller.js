@@ -94,8 +94,8 @@ class UserController {
 
       responseUser.role = role ? role : { name: '------', _id: null };
       responseUser.team = team ? team : { name: '------', _id: null };
-      user.role = data.roleId;
-      user.team = data.teamId;
+      user.role = roleId;
+      user.team = teamId;
       await userService.update(user._id, user);
 
       return res.json(responseUser);
