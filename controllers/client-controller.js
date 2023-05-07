@@ -14,32 +14,32 @@ class ClientController {
     try {
       const { username, email, password, repeatPassword } = req.body;
       if (!username && !email && !password && !repeatPassword) {
-        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.REGISTRATION.EMPTY'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.REGISTRATION.EMPTY'));
       }
       if (!/^[0-9a-zA-Z]+$/.test(username)) {
-        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.REGISTRATION.USERNAME'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.REGISTRATION.USERNAME.ERROR'));
       }
       if (!/^[^@]+@\w+(\.\w+)+\w$/.test(email)) {
-        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.REGISTRATION.EMAIL'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.REGISTRATION.EMAIL.ERROR'));
       }
       if (password !== repeatPassword) {
-        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.REGISTRATION.PASSWORD.NOT_MATCH'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.REGISTRATION.PASSWORD.NOT_MATCH'));
       }
       if (password.length < 4) {
-        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.REGISTRATION.PASSWORD.LONG'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.REGISTRATION.PASSWORD.LONG'));
       }
       if (password.length > 32) {
-        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.REGISTRATION.PASSWORD.SHORT'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.REGISTRATION.PASSWORD.SHORT'));
       }
 
       const isEmail = await clientService.findByEmail(email);
       if (isEmail) {
-        throw ApiError.BadRequerest(i18n.t('USER_SERVICE.REGISTRATION.EMAIL'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.REGISTRATION.EMAIL.AVAILABLE'));
       }
 
       const isUsername = await clientService.findByUsername(username);
       if (isUsername) {
-        throw ApiError.BadRequerest(i18n.t('USER_SERVICE.REGISTRATION.USERNAME'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.REGISTRATION.USERNAME.AVAILABLE'));
       }
 
       const hashPassword = await bcrypt.hash(password, 3);
@@ -78,18 +78,18 @@ class ClientController {
     try {
       const { email, password } = req.body;
       if (!email && !password) {
-        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.LOGIN.EMPTY'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.LOGIN.EMPTY'));
       }
       if (!/^[^@]+@\w+(\.\w+)+\w$/.test(email)) {
-        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.LOGIN.EMAIL'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.LOGIN.EMAIL'));
       }
       const user = await clientService.findByEmailFull(email);
       if (!user) {
-        throw ApiError.BadRequerest(req.t('USER_SERVICE.LOGIN.NOT_USER'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.LOGIN.NOT_USER'));
       }
       const isPassEquals = await bcrypt.compare(password, user.password);
       if (!isPassEquals) {
-        throw ApiError.BadRequerest(req.t('USER_SERVICE.LOGIN.NOT_MATCH_PASSWORD'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.LOGIN.NOT_MATCH_PASSWORD'));
       }
       const userDto = new UserDto(user);
       const tokens = tokenService.generate({ id: user._id, username: user.username, email });
@@ -123,7 +123,7 @@ class ClientController {
       const activationLink = req.params.link;
       const user = await clientService.findByActivationLink(activationLink);
       if (!user) {
-        throw ApiError.BadRequerest(req.t('USER_SERVICE.ACTIVATE.LINK'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.ACTIVATE.LINK'));
       }
       user.isActivated = true;
       user.activationDate = Date.now();
@@ -139,11 +139,11 @@ class ClientController {
       const { refreshToken } = req.cookies;
       const tokenData = await tokenService.get(refreshToken);
       if (!tokenData) {
-        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.SEND_CODE.NOT_USER'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.SEND_CODE.NOT_USER'));
       }
       const UserData = await clientService.findById(id);
       if (!UserData) {
-        throw ApiError.BadRequerest(req.t('USER_CONTROLLER.SEND_CODE.NOT_USER'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.SEND_CODE.NOT_USER'));
       }
       if (!UserData.isActivated) {
         const activationLink = uuidv4();
@@ -193,12 +193,12 @@ class ClientController {
     }
   }
 
-  async updateUser(req, res, next) {
+  async update(req, res, next) {
     try {
       const { refreshToken } = req.cookies;
       const { password, newPassword, username, email } = req.body;
       if (!password) {
-        throw ApiError.BadRequerest(req.t('USER_SERVICE.UPDATE_USER.NOT_PASSWORD'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.UPDATE.NOT_PASSWORD'));
       }
 
       const userData = tokenService.validateRefresh(refreshToken);
@@ -210,7 +210,7 @@ class ClientController {
       const user = await clientService.findById(userData.id);
       const isPassEquals = await bcrypt.compare(password, user.password);
       if (!isPassEquals) {
-        throw ApiError.BadRequerest(req.t('USER_SERVICE.UPDATE_USER.NOT_MATCH_PASSWORD'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.UPDATE.NOT_MATCH_PASSWORD'));
       }
       if (newPassword) user.password = await bcrypt.hash(newPassword, 3);
       if (username) user.username = username;
@@ -229,18 +229,18 @@ class ClientController {
   //     //TODO добавить переводы и переименовать сервисы в функции в ленды
   //     const tokenData = tokenService.validateRefresh(refreshToken);
   //     if (!tokenData) {
-  //       throw ApiError.BadRequerest(req.t('USER_CONTROLLER.GET_PRODUCTS.NOT_USER'));
+  //       throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.GET_PRODUCTS.NOT_USER'));
   //     }
 
   //     const userData = await clientService.getUserTeamInfo(tokenData.id);
   //     if (!userData.team) {
-  //       throw ApiError.BadRequerest(req.t('USER_CONTROLLER.GET_PRODUCTS.NOT_TEAM'));
+  //       throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.GET_PRODUCTS.NOT_TEAM'));
   //     }
 
   //     const bearer = decrypt(userData.team.bearer);
   //     const offers = await crmService.getAllOffers(bearer);
   //     if (offers === null) {
-  //       throw ApiError.BadRequerest(req.t('USER_CONTROLLER.GET_PRODUCTS.BEARER_INVALID'));
+  //       throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.GET_PRODUCTS.BEARER_INVALID'));
   //     }
   //     //TODO тут нужно еще отфильтровать по разрешению на просмотр от админа
   //     const productsName = offers.data.map((offer) => offer.offer_title);

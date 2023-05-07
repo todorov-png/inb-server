@@ -10,7 +10,7 @@ router.post('/logout', ClientController.logout);
 router.get('/activate/:link', ClientController.activate);
 router.get('/refresh', ClientController.refresh);
 router.post('/activation-code', authMiddleware, ClientController.sendNewActivationCode);
-router.put('/user/edit', authMiddleware, ClientController.updateUser);
+router.put('/user/edit', authMiddleware, ClientController.update);
 // router.get('/lands', authMiddleware, ClientController.getLands);
 
 export default router;

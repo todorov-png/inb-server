@@ -42,7 +42,7 @@ class ClientService {
   // async getUserTeamInfo(id) {
   //   const user = await UserModel.findOne({ _id: id }, { team: true }).populate('team');
   //   if (!user) {
-  //     throw ApiError.BadRequerest(i18n.t('USER_SERVICE.GET_USER.NOT_FOUND'));
+  //     throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.GET.NOT_FOUND'));
   //   }
   //   return user;
   // }

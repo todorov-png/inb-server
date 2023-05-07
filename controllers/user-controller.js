@@ -19,27 +19,27 @@ class UserController {
     try {
       const { username, email, password, role, team } = req.body;
       if (!username && !email && !password) {
-        throw ApiError.BadRequerest(req.t('CONTROLLER.TEAM.CREATE_USER.EMPTY'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.USER.CREATE.EMPTY'));
       }
       if (!/^[0-9a-zA-Z]+$/.test(username)) {
-        throw ApiError.BadRequerest(req.t('CONTROLLER.TEAM.CREATE_USER.USERNAME'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.USER.CREATE.USERNAME.ERROR'));
       }
       if (!/^[^@]+@\w+(\.\w+)+\w$/.test(email)) {
-        throw ApiError.BadRequerest(req.t('CONTROLLER.TEAM.CREATE_USER.EMAIL'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.USER.CREATE.EMAIL.ERROR'));
       }
       if (password.length < 4) {
-        throw ApiError.BadRequerest(req.t('CONTROLLER.TEAM.CREATE_USER.PASSWORD.LONG'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.USER.CREATE.PASSWORD.LONG'));
       }
       if (password.length > 32) {
-        throw ApiError.BadRequerest(req.t('CONTROLLER.TEAM.CREATE_USER.PASSWORD.SHORT'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.USER.CREATE.PASSWORD.SHORT'));
       }
       const isEmail = await userService.findByEmail(email);
       if (isEmail) {
-        throw ApiError.BadRequerest(req.t('USER_SERVICE.CREATE_USER.EMAIL'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.USER.CREATE.EMAIL.AVAILABLE'));
       }
       const isUsername = await userService.findByUsername(username);
       if (isUsername) {
-        throw ApiError.BadRequerest(req.t('USER_SERVICE.CREATE_USER.USERNAME'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.USER.CREATE.USERNAME.AVAILABLE'));
       }
       const hashPassword = await bcrypt.hash(password, 3);
       const activationLink = uuidv4();
@@ -72,7 +72,7 @@ class UserController {
       const { userId, roleId, teamId } = req.body;
       const user = await userService.findById(userId);
       if (!user) {
-        throw ApiError.BadRequerest(req.t('USER_SERVICE.EDIT_USER.NOT_FOUND'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.USER.UPDATE.NOT_FOUND'));
       }
 
       const responseUser = JSON.parse(JSON.stringify(user));
@@ -109,7 +109,7 @@ class UserController {
       const { user } = req.body;
       const userData = await userService.findById(user);
       if (!userData) {
-        throw ApiError.BadRequerest(req.t('USER_SERVICE.DELETE_USER.NOT_FOUND'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.USER.DELETE.NOT_FOUND'));
       }
       if (userData.team) await teamService.decUserCounter(userData.team);
       await userService.delete(user);
