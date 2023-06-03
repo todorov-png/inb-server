@@ -4,12 +4,12 @@ import ApiError from '../exceptions/api-error.js';
 class CategoryController {
   async create(req, res, next) {
     try {
-      const { name } = req.body;
-      const isCategory = await categoryService.findByName(name);
+      const { nameCRM, nameSoftware } = req.body;
+      const isCategory = await categoryService.findByName(nameCRM, nameSoftware);
       if (isCategory) {
         throw ApiError.BadRequerest(req.t('CONTROLLER.CATEGORY.HAS_ALREADY'));
       }
-      const data = await categoryService.create({ name });
+      const data = await categoryService.create({ nameCRM, nameSoftware });
       return res.json(data);
     } catch (e) {
       next(e);
@@ -18,19 +18,19 @@ class CategoryController {
 
   async update(req, res, next) {
     try {
-      const { name, _id } = req.body;
+      const { nameCRM, nameSoftware, _id } = req.body;
       let category = await categoryService.findById(_id);
       if (!category) {
         throw ApiError.BadRequerest(req.t('CONTROLLER.CATEGORY.NOT_FOUND'));
       }
-      const isCategory = await categoryService.findByName(name);
+      const isCategory = await categoryService.findByName(nameCRM, nameSoftware);
       if (isCategory) {
         throw ApiError.BadRequerest(req.t('CONTROLLER.CATEGORY.HAS_ALREADY'));
       }
       if (isCategory && isCategory._id.toString() !== category._id.toString()) {
         throw ApiError.BadRequerest(req.t('CONTROLLER.CATEGORY.HAS_ALREADY'));
       }
-      await categoryService.update(_id, { name });
+      await categoryService.update(_id, { nameCRM, nameSoftware });
       return res.end();
     } catch (e) {
       next(e);
@@ -39,12 +39,12 @@ class CategoryController {
 
   async delete(req, res, next) {
     try {
-      const { _id } = req.body;
-      const isCategory = await categoryService.findById(_id);
-      if (isCategory) {
+      const { category } = req.body;
+      const isCategory = await categoryService.findById(category);
+      if (!isCategory) {
         throw ApiError.BadRequerest(req.t('CONTROLLER.CATEGORY.NOT_FOUND'));
       }
-      await categoryService.delete(_id);
+      await categoryService.delete(category);
       return res.end();
     } catch (e) {
       next(e);
@@ -54,6 +54,15 @@ class CategoryController {
   async getList(req, res, next) {
     try {
       const data = await categoryService.getList();
+      return res.json(data);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  async getAll(req, res, next) {
+    try {
+      const data = await categoryService.getAll();
       return res.json(data);
     } catch (e) {
       next(e);

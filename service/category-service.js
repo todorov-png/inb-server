@@ -5,9 +5,10 @@ class CategoryService {
     return await CategoryModel.findById(id);
   }
 
-  async findByName(name) {
+  async findByName(nameCRM, nameSoftware) {
     return await CategoryModel.findOne({
-      name: new RegExp('^' + name + '$', 'i'),
+      nameCRM: new RegExp('^' + nameCRM + '$', 'i'),
+      nameSoftware: new RegExp('^' + nameSoftware + '$', 'i'),
     });
   }
 
@@ -23,8 +24,12 @@ class CategoryService {
     await CategoryModel.deleteOne({ _id: id });
   }
 
+  async getAll() {
+    return await CategoryModel.find({});
+  }
+
   async getList() {
-    return await CategoryModel.find({}, { _id: true, name: true });
+    return await CategoryModel.find({}, { _id: true, nameSoftware: true });
   }
 }
 

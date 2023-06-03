@@ -19,8 +19,8 @@ class TeamService {
     await TeamModel.updateOne({ _id: id }, data);
   }
 
-  async delete(id) {
-    await TeamModel.deleteOne({ _id: id });
+  async delete(_id) {
+    await TeamModel.deleteOne({ _id });
   }
 
   async getAll() {

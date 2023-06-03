@@ -112,7 +112,7 @@ class ClientController {
       const { refreshToken } = req.cookies;
       await tokenService.delete(refreshToken);
       res.clearCookie('refreshToken');
-      return res.redirect(process.env.CLIENT_URL);
+      return res.end();
     } catch (e) {
       next(e);
     }
@@ -141,7 +141,7 @@ class ClientController {
       if (!tokenData) {
         throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.SEND_CODE.NOT_USER'));
       }
-      const UserData = await clientService.findById(id);
+      const UserData = await clientService.findById(tokenData.user);
       if (!UserData) {
         throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.SEND_CODE.NOT_USER'));
       }
@@ -264,7 +264,7 @@ class ClientController {
   //       throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.GET_PRODUCTS.NOT_USER'));
   //     }
 
-  //     const userData = await clientService.getUserTeamInfo(tokenData.id);
+  //     const userData = await clientService.getUserTeamInfo(tokenData.user);
   //     if (!userData.team) {
   //       throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.GET_PRODUCTS.NOT_TEAM'));
   //     }

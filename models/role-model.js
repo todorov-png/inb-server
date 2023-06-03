@@ -11,6 +11,12 @@ const RoleSchema = new Schema({
     deleteRole: { type: Boolean },
     createUser: { type: Boolean },
     deleteUser: { type: Boolean },
+    createCategory: { type: Boolean },
+    assignCategory: { type: Boolean },
+    deleteCategory: { type: Boolean },
+    createCountry: { type: Boolean },
+    assignCountry: { type: Boolean },
+    deleteCountry: { type: Boolean },
   },
 });
 

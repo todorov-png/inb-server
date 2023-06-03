@@ -52,13 +52,13 @@ class TeamController {
 
   async delete(req, res, next) {
     try {
-      const { _id } = req.body;
-      const isTeam = await teamService.findById(_id);
-      if (isTeam) {
+      const { team } = req.body;
+      const isTeam = await teamService.findById(team);
+      if (!isTeam) {
         throw ApiError.BadRequerest(req.t('CONTROLLER.TEAM.NOT_FOUND'));
       }
-      await teamService.delete(_id);
-      await userService.clearTeam(_id);
+      await teamService.delete(team);
+      await userService.clearTeam(team);
       return res.end();
     } catch (e) {
       next(e);
