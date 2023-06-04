@@ -5,9 +5,15 @@ class ProductService {
     return await ProductModel.findById(id);
   }
 
-  async findByNameAndCountry(name, country) {
+  async findByName(nameSoftware) {
+    return await CountryModel.findOne({
+      nameSoftware: new RegExp('^' + nameSoftware + '$', 'i'),
+    });
+  }
+
+  async findByNameAndCountry(nameSoftware, country) {
     return await ProductModel.findOne({
-      name: new RegExp('^' + name + '$', 'i'),
+      nameSoftware: new RegExp('^' + nameSoftware + '$', 'i'),
       country: new RegExp('^' + country + '$', 'i'),
     });
   }
@@ -25,12 +31,12 @@ class ProductService {
   }
 
   async getList() {
-    const products = await ProductModel.find({}, { _id: true, name: true, country: true }).populate(
+    const products = await ProductModel.find({}, { _id: true, nameSoftware: true, country: true }).populate(
       'country',
-      'name'
+      'nameSoftware'
     );
     return products.map((item) => {
-      return { _id: item._id, name: `${item.name}[${item.country}]` };
+      return { _id: item._id, name: `${item.nameSoftware}[${item.country}]` };
     });
   }
 

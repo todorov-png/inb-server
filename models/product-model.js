@@ -1,7 +1,8 @@
 import { Schema, model } from 'mongoose';
 
 const ProductSchema = new Schema({
-  name: { type: String, required: true },
+  nameSoftware: { type: String, unique: true, required: true },
+  nameCRM: { type: String, required: true },
   price: { type: Number, required: true, default: 0 },
   country: { type: Schema.Types.ObjectId, ref: 'Country' },
   category: { type: Schema.Types.ObjectId, ref: 'Category' },

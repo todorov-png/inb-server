@@ -1,15 +1,16 @@
 import categoryService from '../service/category-service.js';
+import productService from '../service/product-service.js';
 import ApiError from '../exceptions/api-error.js';
 
 class CategoryController {
   async create(req, res, next) {
     try {
-      const { nameCRM, nameSoftware } = req.body;
-      const isCategory = await categoryService.findByName(nameCRM, nameSoftware);
+      const { nameSoftware } = req.body;
+      const isCategory = await categoryService.findByName(nameSoftware);
       if (isCategory) {
         throw ApiError.BadRequerest(req.t('CONTROLLER.CATEGORY.HAS_ALREADY'));
       }
-      const data = await categoryService.create({ nameCRM, nameSoftware });
+      const data = await categoryService.create(req.body);
       return res.json(data);
     } catch (e) {
       next(e);
@@ -18,19 +19,16 @@ class CategoryController {
 
   async update(req, res, next) {
     try {
-      const { nameCRM, nameSoftware, _id } = req.body;
+      const { nameSoftware, _id } = req.body;
       let category = await categoryService.findById(_id);
       if (!category) {
         throw ApiError.BadRequerest(req.t('CONTROLLER.CATEGORY.NOT_FOUND'));
       }
-      const isCategory = await categoryService.findByName(nameCRM, nameSoftware);
-      if (isCategory) {
-        throw ApiError.BadRequerest(req.t('CONTROLLER.CATEGORY.HAS_ALREADY'));
-      }
+      const isCategory = await categoryService.findByName(nameSoftware);
       if (isCategory && isCategory._id.toString() !== category._id.toString()) {
         throw ApiError.BadRequerest(req.t('CONTROLLER.CATEGORY.HAS_ALREADY'));
       }
-      await categoryService.update(_id, { nameCRM, nameSoftware });
+      await categoryService.update(_id, req.body);
       return res.end();
     } catch (e) {
       next(e);
@@ -44,6 +42,7 @@ class CategoryController {
       if (!isCategory) {
         throw ApiError.BadRequerest(req.t('CONTROLLER.CATEGORY.NOT_FOUND'));
       }
+      await productService.clearCategory(category);
       await categoryService.delete(category);
       return res.end();
     } catch (e) {

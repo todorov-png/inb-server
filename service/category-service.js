@@ -7,7 +7,6 @@ class CategoryService {
 
   async findByName(nameCRM, nameSoftware) {
     return await CategoryModel.findOne({
-      nameCRM: new RegExp('^' + nameCRM + '$', 'i'),
       nameSoftware: new RegExp('^' + nameSoftware + '$', 'i'),
     });
   }

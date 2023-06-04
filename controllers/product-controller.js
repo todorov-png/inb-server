@@ -4,8 +4,8 @@ import ApiError from '../exceptions/api-error.js';
 class ProductController {
   async create(req, res, next) {
     try {
-      const { name, country } = req.body;
-      const isProduct = await productService.findByNameAndCountry(name, country);
+      const { nameSoftware, country } = req.body;
+      const isProduct = await productService.findByNameAndCountry(nameSoftware, country);
       if (isProduct) {
         throw ApiError.BadRequerest(req.t('CONTROLLER.PRODUCT.HAS_ALREADY'));
       }
@@ -18,10 +18,14 @@ class ProductController {
 
   async update(req, res, next) {
     try {
-      const { _id } = req.body;
+      const { nameSoftware, _id } = req.body;
       let product = await productService.findById(_id);
       if (!product) {
         throw ApiError.BadRequerest(req.t('CONTROLLER.PRODUCT.NOT_FOUND'));
+      }
+      const isProduct = await productService.findByName(nameSoftware);
+      if (isProduct && isProduct._id.toString() !== product._id.toString()) {
+        throw ApiError.BadRequerest(req.t('CONTROLLER.PRODUCT.HAS_ALREADY'));
       }
       await productService.update(_id, req.body);
       return res.end();
@@ -32,12 +36,12 @@ class ProductController {
 
   async delete(req, res, next) {
     try {
-      const { _id } = req.body;
-      const isProduct = await productService.findById(_id);
-      if (isProduct) {
+      const { product } = req.body;
+      const isProduct = await productService.findById(product);
+      if (!isProduct) {
         throw ApiError.BadRequerest(req.t('CONTROLLER.PRODUCT.NOT_FOUND'));
       }
-      await productService.delete(_id);
+      await productService.delete(product);
       return res.end();
     } catch (e) {
       next(e);

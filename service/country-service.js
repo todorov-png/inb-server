@@ -4,9 +4,9 @@ class CountryService {
     return await CountryModel.findById(id);
   }
 
-  async findByName(name) {
+  async findByName(nameSoftware) {
     return await CountryModel.findOne({
-      name: new RegExp('^' + name + '$', 'i'),
+      nameSoftware: new RegExp('^' + nameSoftware + '$', 'i'),
     });
   }
 
@@ -22,12 +22,12 @@ class CountryService {
     await CountryModel.deleteOne({ _id: id });
   }
 
-  async getList() {
-    return await CountryModel.find({}, { _id: true, name: true });
+  async getAll() {
+    return await CountryModel.find({});
   }
 
-  async get(id) {
-    return await CountryModel.findOne({ _id: id });
+  async getList() {
+    return await CountryModel.find({}, { _id: true, nameSoftware: true });
   }
 }
 export default new CountryService();
