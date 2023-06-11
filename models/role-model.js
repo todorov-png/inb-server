@@ -17,6 +17,8 @@ const RoleSchema = new Schema({
     createCountry: { type: Boolean },
     assignCountry: { type: Boolean },
     deleteCountry: { type: Boolean },
+    createProduct: { type: Boolean },
+    deleteProduct: { type: Boolean },
   },
 });
 

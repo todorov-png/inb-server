@@ -7,7 +7,7 @@ const ProductSchema = new Schema({
   country: { type: Schema.Types.ObjectId, ref: 'Country' },
   category: { type: Schema.Types.ObjectId, ref: 'Category' },
   lands: [{ type: Schema.Types.ObjectId, ref: 'Land' }],
-  ageGroup: { form: { type: String }, to: { type: String } },
+  ageGroup: { type: String },
 });
 
 export default model('Product', ProductSchema);

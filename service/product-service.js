@@ -1,4 +1,5 @@
 import ProductModel from '../models/product-model.js';
+import { ObjectId } from 'mongodb'
 
 class ProductService {
   async findById(id) {
@@ -6,15 +7,15 @@ class ProductService {
   }
 
   async findByName(nameSoftware) {
-    return await CountryModel.findOne({
+    return await ProductModel.findOne({
       nameSoftware: new RegExp('^' + nameSoftware + '$', 'i'),
     });
   }
 
-  async findByNameAndCountry(nameSoftware, country) {
+  async findByNameCRMAndCountry(nameCRM, country) {
     return await ProductModel.findOne({
-      nameSoftware: new RegExp('^' + nameSoftware + '$', 'i'),
-      country: new RegExp('^' + country + '$', 'i'),
+      nameCRM: new RegExp('^' + nameCRM + '$', 'i'),
+      country: new ObjectId(country),
     });
   }
 
@@ -31,13 +32,20 @@ class ProductService {
   }
 
   async getList() {
-    const products = await ProductModel.find({}, { _id: true, nameSoftware: true, country: true }).populate(
-      'country',
-      'nameSoftware'
-    );
+    const products = await ProductModel.find(
+      {},
+      { _id: true, nameSoftware: true, country: true }
+    ).populate('country', 'nameSoftware');
+
     return products.map((item) => {
       return { _id: item._id, name: `${item.nameSoftware}[${item.country}]` };
     });
+  }
+
+  async getAll() {
+    return await ProductModel.find({}, {})
+      .populate('country', 'nameSoftware')
+      .populate('category', 'nameRU');
   }
 
   async get(id) {

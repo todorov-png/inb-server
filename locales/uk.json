@@ -95,7 +95,10 @@
       "NOT_FOUND": "Країна не знайдена"
     },
     "PRODUCT": {
-      "HAS_ALREADY": "Ця назва вже зайнята",
+      "HAS_ALREADY": {
+        "CRM": "NameCRM вже зайнято",
+        "SOFTWARE": "NameSoftware вже зайнято"
+      },
       "NOT_FOUND": "Продукт не знайден"
     },
     "CATEGORY": {
