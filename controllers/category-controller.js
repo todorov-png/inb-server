@@ -5,8 +5,8 @@ import ApiError from '../exceptions/api-error.js';
 class CategoryController {
   async create(req, res, next) {
     try {
-      const { nameRU } = req.body;
-      const isCategory = await categoryService.findByName(nameRU);
+      const { name } = req.body;
+      const isCategory = await categoryService.findByName(name);
       if (isCategory) {
         throw ApiError.BadRequerest(req.t('CONTROLLER.CATEGORY.HAS_ALREADY'));
       }
@@ -19,12 +19,12 @@ class CategoryController {
 
   async update(req, res, next) {
     try {
-      const { nameRU, _id } = req.body;
+      const { name, _id } = req.body;
       let category = await categoryService.findById(_id);
       if (!category) {
         throw ApiError.BadRequerest(req.t('CONTROLLER.CATEGORY.NOT_FOUND'));
       }
-      const isCategory = await categoryService.findByName(nameRU);
+      const isCategory = await categoryService.findByName(name);
       if (isCategory && isCategory._id.toString() !== category._id.toString()) {
         throw ApiError.BadRequerest(req.t('CONTROLLER.CATEGORY.HAS_ALREADY'));
       }

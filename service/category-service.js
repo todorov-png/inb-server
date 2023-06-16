@@ -5,9 +5,9 @@ class CategoryService {
     return await CategoryModel.findById(id);
   }
 
-  async findByName(nameRU) {
+  async findByName(name) {
     return await CategoryModel.findOne({
-      nameRU: new RegExp('^' + nameRU + '$', 'i'),
+      name: new RegExp('^' + name + '$', 'i'),
     });
   }
 
@@ -28,7 +28,7 @@ class CategoryService {
   }
 
   async getList() {
-    return await CategoryModel.find({}, { _id: true, nameRU: true });
+    return await CategoryModel.find({}, { _id: true, name: true });
   }
 }
 

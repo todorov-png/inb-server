@@ -5,8 +5,8 @@ import ApiError from '../exceptions/api-error.js';
 class CountryController {
   async create(req, res, next) {
     try {
-      const { nameSoftware } = req.body;
-      const isCountry = await countryService.findByName(nameSoftware);
+      const { name } = req.body;
+      const isCountry = await countryService.findByName(name);
       if (isCountry) {
         throw ApiError.BadRequerest(req.t('CONTROLLER.COUNTRY.HAS_ALREADY'));
       }
@@ -19,12 +19,12 @@ class CountryController {
 
   async update(req, res, next) {
     try {
-      const { nameSoftware, _id } = req.body;
+      const { name, _id } = req.body;
       let country = await countryService.findById(_id);
       if (!country) {
         throw ApiError.BadRequerest(req.t('CONTROLLER.COUNTRY.NOT_FOUND'));
       }
-      const isCountry = await countryService.findByName(nameSoftware);
+      const isCountry = await countryService.findByName(name);
       if (isCountry && isCountry._id.toString() !== country._id.toString()) {
         throw ApiError.BadRequerest(req.t('CONTROLLER.COUNTRY.HAS_ALREADY'));
       }
