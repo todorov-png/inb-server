@@ -5,19 +5,9 @@ import authMiddleware from '../../middlewares/auth-middleware.js';
 
 const router = new Router();
 
-router.post(
-  '/',
-  authMiddleware,
-  permissionMiddleware.bind(['createRole']),
-  RoleController.create
-);
+router.post('/', authMiddleware, permissionMiddleware.bind(['createRole']), RoleController.create);
 
-router.put(
-  '/',
-  authMiddleware,
-  permissionMiddleware.bind(['createRole']),
-  RoleController.update
-);
+router.put('/', authMiddleware, permissionMiddleware.bind(['createRole']), RoleController.update);
 
 router.delete(
   '/',

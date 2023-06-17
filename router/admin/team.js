@@ -19,19 +19,9 @@ router.get(
   TeamController.getList
 );
 
-router.post(
-  '/',
-  authMiddleware,
-  permissionMiddleware.bind(['createTeam']),
-  TeamController.create
-);
+router.post('/', authMiddleware, permissionMiddleware.bind(['createTeam']), TeamController.create);
 
-router.put(
-  '/',
-  authMiddleware,
-  permissionMiddleware.bind(['createTeam']),
-  TeamController.update
-);
+router.put('/', authMiddleware, permissionMiddleware.bind(['createTeam']), TeamController.update);
 
 router.delete(
   '/',

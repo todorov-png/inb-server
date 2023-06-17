@@ -39,13 +39,9 @@ class ClientService {
     await UserModel.updateOne({ _id: id }, data);
   }
 
-  // async getUserTeamInfo(id) {
-  //   const user = await UserModel.findOne({ _id: id }, { team: true }).populate('team');
-  //   if (!user) {
-  //     throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.GET.NOT_FOUND'));
-  //   }
-  //   return user;
-  // }
+  async getUserTeamInfo(id) {
+    return await UserModel.findOne({ _id: id }, { team: true }).populate('team');
+  }
 }
 
 export default new ClientService();

@@ -2,12 +2,13 @@ import mailService from '../service/mail-service.js';
 import tokenService from '../service/token-service.js';
 // import landService from '../service/land-service.js';
 import clientService from '../service/client-service.js';
-// import crmService from '../service/crm-service.js';
+import productService from '../service/product-service.js';
+import crmService from '../service/crm-service.js';
 import ApiError from '../exceptions/api-error.js';
 import UserDto from '../dtos/user-dto.js';
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
-// import { decrypt } from '../helpers/encryption.js';
+import { decrypt } from '../helpers/encryption.js';
 
 class ClientController {
   async registration(req, res, next) {
@@ -141,7 +142,7 @@ class ClientController {
       if (!tokenData) {
         throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.SEND_CODE.NOT_USER'));
       }
-      const UserData = await clientService.findById(tokenData.user);
+      const UserData = await clientService.findById(tokenData.id);
       if (!UserData) {
         throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.SEND_CODE.NOT_USER'));
       }
@@ -255,6 +256,50 @@ class ClientController {
     }
   }
 
+  async getProducts(req, res, next) {
+    try {
+      const { refreshToken } = req.cookies;
+      const tokenData = tokenService.validateRefresh(refreshToken);
+      if (!tokenData) {
+        throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.GET_PRODUCTS.NOT_USER'));
+      }
+
+      const userData = await clientService.getUserTeamInfo(tokenData.id);
+      if (!userData.team) {
+        throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.GET_PRODUCTS.NOT_TEAM'));
+      }
+
+      const bearer = decrypt(userData.team.bearer);
+      const offers = await crmService.getAllOffers(bearer);
+      if (offers === null) {
+        throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.GET_PRODUCTS.BEARER_INVALID'));
+      }
+
+      const products = await productService.getAll();
+      const answer = [];
+      offers.data.forEach((offer) => {
+        const product = products.find(
+          (item) => offer.offer_title === item.name && offer.country_name === item.country.name
+        );
+        product
+          ? answer.push({
+              _id: product._id,
+              name: product.name,
+              price: product.price,
+              country: product.country.name,
+              category: product.category.name,
+              image:
+                'https://img3.akspic.ru/previews/7/4/2/8/6/168247/168247-kosti_3d-igra_v_kosti_3d-azartnaya_igra-pitevaya_igra-kazino-500x.jpg',
+            })
+          : null;
+      });
+
+      return res.json(answer);
+    } catch (e) {
+      next(e);
+    }
+  }
+
   // async getLands(req, res, next) {
   //   try {
   //     const { refreshToken } = req.cookies;
@@ -264,7 +309,7 @@ class ClientController {
   //       throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.GET_PRODUCTS.NOT_USER'));
   //     }
 
-  //     const userData = await clientService.getUserTeamInfo(tokenData.user);
+  //     const userData = await clientService.getUserTeamInfo(tokenData.id);
   //     if (!userData.team) {
   //       throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.GET_PRODUCTS.NOT_TEAM'));
   //     }

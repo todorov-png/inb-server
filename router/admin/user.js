@@ -11,12 +11,7 @@ router.get(
   permissionMiddleware.bind(['assignRole', 'assignTeam', 'deleteUser']),
   UserController.getAll
 );
-router.post(
-  '/',
-  authMiddleware,
-  permissionMiddleware.bind(['createUser']),
-  UserController.create
-);
+router.post('/', authMiddleware, permissionMiddleware.bind(['createUser']), UserController.create);
 router.put(
   '/',
   authMiddleware,
