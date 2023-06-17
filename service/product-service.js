@@ -1,20 +1,20 @@
 import ProductModel from '../models/product-model.js';
-import { ObjectId } from 'mongodb'
+import { ObjectId } from 'mongodb';
 
 class ProductService {
   async findById(id) {
     return await ProductModel.findById(id);
   }
 
-  async findByName(nameSoftware) {
+  async findByName(name) {
     return await ProductModel.findOne({
-      nameSoftware: new RegExp('^' + nameSoftware + '$', 'i'),
+      name: new RegExp('^' + name + '$', 'i'),
     });
   }
 
-  async findByNameCRMAndCountry(nameCRM, country) {
+  async findByNameAndCountry(name, country) {
     return await ProductModel.findOne({
-      nameCRM: new RegExp('^' + nameCRM + '$', 'i'),
+      name: new RegExp('^' + name + '$', 'i'),
       country: new ObjectId(country),
     });
   }
@@ -32,20 +32,18 @@ class ProductService {
   }
 
   async getList() {
-    const products = await ProductModel.find(
-      {},
-      { _id: true, nameSoftware: true, country: true }
-    ).populate('country', 'nameSoftware');
+    const products = await ProductModel.find({}, { _id: true, name: true, country: true }).populate(
+      'country',
+      'name'
+    );
 
     return products.map((item) => {
-      return { _id: item._id, name: `${item.nameSoftware}[${item.country}]` };
+      return { _id: item._id, name: `${item.name}[${item.country}]` };
     });
   }
 
   async getAll() {
-    return await ProductModel.find({}, {})
-      .populate('country', 'nameSoftware')
-      .populate('category', 'nameRU');
+    return await ProductModel.find({}, {}).populate('country', 'name').populate('category', 'name');
   }
 
   async get(id) {

@@ -95,10 +95,7 @@
       "NOT_FOUND": "Страна не найдена"
     },
     "PRODUCT": {
-      "HAS_ALREADY": {
-        "CRM": "NameCRM уже занято",
-        "SOFTWARE": "NameSoftware уже занято"
-      },
+      "HAS_ALREADY": "Это имя уже занято",
       "NOT_FOUND": "Продукт не найден"
     },
     "CATEGORY": {

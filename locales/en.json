@@ -95,10 +95,7 @@
       "NOT_FOUND": "County not found"
     },
     "PRODUCT": {
-      "HAS_ALREADY": {
-        "CRM": "NameCRM is already taken",
-        "SOFTWARE": "NameSoftware is already taken"
-      },
+      "HAS_ALREADY": "This name is already taken",
       "NOT_FOUND": "Product not found"
     },
     "CATEGORY": {

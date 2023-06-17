@@ -4,14 +4,10 @@ import ApiError from '../exceptions/api-error.js';
 class ProductController {
   async create(req, res, next) {
     try {
-      const { nameCRM, nameSoftware, country } = req.body;
-      const isProductCRM = await productService.findByNameCRMAndCountry(nameCRM, country);
-      if (isProductCRM) {
-        throw ApiError.BadRequerest(req.t('CONTROLLER.PRODUCT.HAS_ALREADY.CRM'));
-      }
-      const isProduct = await productService.findByName(nameSoftware);
+      const { name, country } = req.body;
+      const isProduct = await productService.findByNameAndCountry(name, country);
       if (isProduct) {
-        throw ApiError.BadRequerest(req.t('CONTROLLER.PRODUCT.HAS_ALREADY.SOFTWARE'));
+        throw ApiError.BadRequerest(req.t('CONTROLLER.PRODUCT.HAS_ALREADY'));
       }
       const data = await productService.create(req.body);
       return res.json(data);
@@ -22,12 +18,12 @@ class ProductController {
 
   async update(req, res, next) {
     try {
-      const { nameSoftware, _id } = req.body;
+      const { name, country, _id } = req.body;
       let product = await productService.findById(_id);
       if (!product) {
         throw ApiError.BadRequerest(req.t('CONTROLLER.PRODUCT.NOT_FOUND'));
       }
-      const isProduct = await productService.findByName(nameSoftware);
+      const isProduct = await productService.findByNameAndCountry(name, country);
       if (isProduct && isProduct._id.toString() !== product._id.toString()) {
         throw ApiError.BadRequerest(req.t('CONTROLLER.PRODUCT.HAS_ALREADY'));
       }
