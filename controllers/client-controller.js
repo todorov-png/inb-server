@@ -285,11 +285,11 @@ class ClientController {
           ? answer.push({
               _id: product._id,
               name: product.name,
+              photo:
+                'https://img3.akspic.ru/previews/7/4/2/8/6/168247/168247-kosti_3d-igra_v_kosti_3d-azartnaya_igra-pitevaya_igra-kazino-500x.jpg',
               price: product.price,
               country: product.country.name,
               category: product.category.name,
-              image:
-                'https://img3.akspic.ru/previews/7/4/2/8/6/168247/168247-kosti_3d-igra_v_kosti_3d-azartnaya_igra-pitevaya_igra-kazino-500x.jpg',
             })
           : null;
       });
