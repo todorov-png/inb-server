@@ -50,11 +50,12 @@ class ProductService {
     return await ProductModel.findOne({ _id: id });
   }
 
+  //TODO тут ругается на схему с лендами
   async getFull(id) {
     return await ProductModel.findOne({ _id: id })
       .populate('country')
       .populate('category')
-      .populate('lands');
+      // .populate('lands');
   }
 
   async clearCountry(_id) {

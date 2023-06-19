@@ -277,6 +277,7 @@ class ClientController {
 
       const products = await productService.getAll();
       const answer = [];
+      //TODO Разобраться с картинками
       offers.data.forEach((offer) => {
         const product = products.find(
           (item) => offer.offer_title === item.name && offer.country_name === item.country.name
@@ -293,6 +294,60 @@ class ClientController {
             })
           : null;
       });
+
+      return res.json(answer);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  async getProduct(req, res, next) {
+    try {
+      const { refreshToken } = req.cookies;
+      const productID = req.query._id;
+      const tokenData = tokenService.validateRefresh(refreshToken);
+      if (!tokenData) {
+        throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.GET_PRODUCT.NOT_USER'));
+      }
+
+      const userData = await clientService.getUserTeamInfo(tokenData.id);
+      if (!userData.team) {
+        throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.GET_PRODUCT.NOT_TEAM'));
+      }
+
+      const bearer = decrypt(userData.team.bearer);
+      const offers = await crmService.getAllOffers(bearer);
+      if (offers === null) {
+        throw ApiError.BadRequerest(req.t('CONTROLLER.CLIENT.GET_PRODUCT.BEARER_INVALID'));
+      }
+
+      const product = await productService.getFull(productID);
+      if (!product) {
+        return res.status(404).end();
+      }
+
+      const offer = offers.data.find(
+        (item) => item.offer_title === product.name && item.country_name === product.country.name
+      );
+      if (!offer) {
+        return res.status(404).end();
+      }
+      //TODO Разобраться с картинками
+      const answer = {
+        _id: product._id,
+        name: product.name,
+        photo:
+          'https://img3.akspic.ru/previews/7/4/2/8/6/168247/168247-kosti_3d-igra_v_kosti_3d-azartnaya_igra-pitevaya_igra-kazino-500x.jpg',
+        price: product.price,
+        country: product.country.name,
+        lang: product.country.lang,
+        callCenterSchedule: product.country.callCenterSchedule,
+        category: product.category.name,
+        currency: offer.country_currency,
+        currencySymbol: offer.currency_symbol,
+        payout: offer.payout,
+        uuid: offer.uuid,
+      };
 
       return res.json(answer);
     } catch (e) {

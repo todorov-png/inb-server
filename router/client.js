@@ -12,6 +12,7 @@ router.get('/refresh', ClientController.refresh);
 router.post('/activation-code', authMiddleware, ClientController.sendNewActivationCode);
 router.put('/user/edit', authMiddleware, ClientController.update);
 router.get('/products', authMiddleware, ClientController.getProducts);
+router.get('/product', authMiddleware, ClientController.getProduct);
 // router.get('/lands', authMiddleware, ClientController.getLands);
 
 export default router;
