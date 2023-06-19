@@ -341,6 +341,7 @@ class ClientController {
         price: product.price,
         country: product.country.name,
         lang: product.country.lang,
+        ageGroup: product.ageGroup,
         callCenterSchedule: product.country.callCenterSchedule,
         category: product.category.name,
         currency: offer.country_currency,
